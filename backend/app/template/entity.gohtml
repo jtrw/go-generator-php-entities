@@ -6,8 +6,26 @@ class {{.EntityName}}
 {{range .Properties}}
     private {{.Type}} {{.Name}};
 {{end}}
+{{range .Methods}}
     public function {{.MethodName}}(): {{.TypeMethod}}
     {
-        return $this->id;
+        return $this->{{.Return}};
+    }
+{{end}}
+
+    public function toArray(): array
+    {
+        return [{{range .Methods}}
+            '{{.Return}}' => $this->{{.Return}},{{end}}
+        ];
+    }
+
+    public static function fromArray(array $fields): self
+    {
+        $entity = new self();
+{{range .Methods}}
+        $entity->{{.Return}} = $fields['{{.Return}}'];{{end}}
+
+        return $entity;
     }
 }
