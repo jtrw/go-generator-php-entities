@@ -6,8 +6,10 @@ class {{.EntityName}}
 {{range .Properties}}
     private {{.Type}} {{.Name}};
 {{end}}
+{{range .Methods}}
     public function {{.MethodName}}(): {{.TypeMethod}}
     {
-        return $this->id;
+        return $this->{{.Return}};
     }
+{{end}}
 }

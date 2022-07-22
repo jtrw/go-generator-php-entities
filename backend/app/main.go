@@ -27,29 +27,6 @@ func main() {
         log.Fatal(err)
     }
 
-//     const tmp = `
-//         private {{.Type}} {{.Name}};`
-//
-//     type Properties struct {
-//         Type, Name string
-//     }
-//
-//     var PropertiesData = []Properties{
-//         {"int", "$id"},
-//         {"string", "$name"},
-//     }
-//
-//     t := template.Must(template.New("template").Parse(tmp))
-
-    // Execute the template for each recipient.
-
-//     for _, r := range templateData {
-//         err := t.Execute(os.Stdout, r)
-//         if err != nil {
-//             log.Println("executing template:", err)
-//         }
-//     }
-
     printEntity();
 }
 
@@ -58,22 +35,27 @@ func printEntity() {
         Type, Name string
     }
 
-    var PropertiesData = []Property{
-        {"int", "$id"},
-        {"string", "$name"},
+    type Method struct {
+        MethodName, TypeMethod, Return string
     }
-
 
     type TemplateEntity struct {
         Properties []Property
-        EntityName, MethodName, TypeMethod string
+        Methods []Method
+        EntityName string
     }
 
+     var PropertiesData = []Property{
+        {"int", "$id"},
+        {"string", "$name"},
+    }
     var templateData = TemplateEntity{
         EntityName: "UserEntity",
-        MethodName: "getId",
-        TypeMethod: "string",
         Properties: PropertiesData,
+        Methods: []Method{
+            {"getId", "int", "id"},
+            {"getName", "string", "name"},
+        },
     }
 
     t, err := template.ParseFiles("backend/app/template/entity.gohtml")
