@@ -2,7 +2,6 @@ package repository
 
 import (
     "database/sql"
-    "log"
 )
 
 type DescribeTable struct {
@@ -14,23 +13,21 @@ type DescribeTable struct {
 	Extra string `db:"Extra"`
 }
 
-func Get(connection *sql.DB, table string) (DescribeTable, error) {
-    var describe DescribeTable
-
-    sqlStatement := `DESCRIBE users`
+func Get(connection *sql.DB, table string) ([]DescribeTable, error) {
+    var infoTable []DescribeTable
+    sqlStatement := "DESCRIBE "+table
     rows, err := connection.Query(sqlStatement)
     if err != nil {
-        log.Print("d")
-        log.Fatal(err)
+        return nil, err
     }
     for rows.Next() {
-        errRow := rows.Scan(&describe.Field, &describe.Type, &describe.Null, &describe.Key,  &describe.Default, &describe.Extra)
+        var infoRow DescribeTable
+        errRow := rows.Scan(&infoRow.Field, &infoRow.Type, &infoRow.Null, &infoRow.Key,  &infoRow.Default, &infoRow.Extra)
         if errRow != nil {
-            log.Print("dsss")
-            log.Fatal(errRow)
+            return nil, errRow
         }
+        infoTable = append(infoTable, infoRow)
     }
 
-
-    return describe, err
+    return infoTable, err
 }

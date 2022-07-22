@@ -13,6 +13,7 @@ import (
    "database/sql"
    _ "github.com/go-sql-driver/mysql"
    describe "generator-php-entities/v1/backend/app/repository"
+   "strings"
 )
 
 type Options struct {
@@ -36,12 +37,14 @@ func main() {
         log.Fatal(err)
     }
 
-    printEntity();
-
     connection := initDb(opts)
-    res, _ := describe.Get(connection, opts.Table)
+    results, err := describe.Get(connection, opts.Table)
 
-    fmt.Println(res.Field)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    printEntity(results);
 }
 
 func initDb(opts Options) (*sql.DB) {
@@ -62,7 +65,7 @@ func dsn(opts Options) string {
     return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
-func printEntity() {
+func printEntity(rows []describe.DescribeTable) {
     type Property struct {
         Type, Name string
     }
@@ -81,6 +84,15 @@ func printEntity() {
         {"int", "$id"},
         {"string", "$name"},
     }
+
+     for _, row := range rows {
+         var rowData Property
+         rowData.Type = getPreparedType(row.Type)
+         rowData.Name = "$"+getPreparedName(row.Field)
+         PropertiesData = append(PropertiesData, rowData)
+    }
+
+
     var templateData = TemplateEntity{
         EntityName: "UserEntity",
         Properties: PropertiesData,
@@ -113,4 +125,32 @@ func printEntity() {
         log.Println("executing template:", err)
     }
     //}
+}
+
+func getPreparedType(t string) (string) {
+
+    if strings.Contains(t, "int") {
+        return "int"
+    }
+
+    if strings.Contains(t, "decimal") || strings.Contains(t, "float") {
+        return "float"
+    }
+
+    if strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
+     strings.Contains(t, "time") || strings.Contains(t, "char") ||
+     strings.Contains(t, "date")  {
+        return "string"
+    }
+
+    return t
+}
+
+func getPreparedName(name string) (string) {
+    words := strings.Split(name, "_")
+    name = strings.ToLower(words[0])
+    for _, word := range words[1:] {
+        name += strings.Title(word)
+    }
+    return name;
 }
