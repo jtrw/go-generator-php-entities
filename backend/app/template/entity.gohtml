@@ -12,4 +12,20 @@ class {{.EntityName}}
         return $this->{{.Return}};
     }
 {{end}}
+
+    public function toArray(): array
+    {
+        return [{{range .Methods}}
+            '{{.Return}}' => $this->{{.Return}},{{end}}
+        ];
+    }
+
+    public static function fromArray(array $fields): self
+    {
+        $entity = new self();
+{{range .Methods}}
+        $entity->{{.Return}} = $fields['{{.Return}}'];{{end}}
+
+        return $entity;
+    }
 }
