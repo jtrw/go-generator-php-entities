@@ -1,7 +1,7 @@
 package main
 
 import (
-  //"fmt"
+  "fmt"
   "log"
   "os"
   "github.com/jessevdk/go-flags"
@@ -10,14 +10,18 @@ import (
   //"bytes"
   //"github.com/joho/godotenv"
   "text/template"
+   "database/sql"
+   _ "github.com/go-sql-driver/mysql"
+   describe "generator-php-entities/v1/backend/app/repository"
 )
 
 type Options struct {
+   DbName string `short:"n" long:"db_name" default:"local_uniquecasino" description:"DB Name"`
    DbHost string `short:"h" long:"db_host" default:"127.0.0.1" description:"DB Host"`
-   DbPort string `short:"p" long:"db_port" default:"3606" description:"DB Port"`
+   DbPort string `short:"p" long:"db_port" default:"3306" description:"DB Port"`
    DbUser string `short:"u" long:"db_user" default:"mysql_user" description:"DB User"`
    DbPassword string `long:"db_password" default:"astalavista" description:"DB Password"`
-   DbType string `long:"db_type" default:"8080" description:"Port web server"`
+   DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
    Table string `short:"t" long:"table" description:"Table for generate Entity"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
 }
@@ -33,6 +37,29 @@ func main() {
     }
 
     printEntity();
+
+    connection := initDb(opts)
+    res, _ := describe.Get(connection, opts.Table)
+
+    fmt.Println(res.Field)
+}
+
+func initDb(opts Options) (*sql.DB) {
+    psqlInfo := dsn(opts)
+    connection, err := sql.Open(opts.DbType, psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+
+    err = connection.Ping()
+    if err != nil {
+        panic(err)
+    }
+    return connection
+}
+
+func dsn(opts Options) string {
+    return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
 func printEntity() {
