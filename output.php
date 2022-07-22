@@ -3,7 +3,12 @@ namespace App\Entity;
 
 class UserEntity
 {
-    public function getId()
+
+    private int $id;
+
+    private string $name;
+
+    public function getId(): string
     {
         return $this->id;
     }

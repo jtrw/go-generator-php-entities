@@ -27,51 +27,53 @@ func main() {
         log.Fatal(err)
     }
 
-    const tmp = `
-        private {{.Type}} {{.Name}};`
-
-    type TemplateEntity struct {
-        Type, Name string
-    }
-
-    var templateData = []TemplateEntity{
-        {"int", "$id"},
-        {"string", "$name"},
-    }
-
-    t := template.Must(template.New("template").Parse(tmp))
+//     const tmp = `
+//         private {{.Type}} {{.Name}};`
+//
+//     type Properties struct {
+//         Type, Name string
+//     }
+//
+//     var PropertiesData = []Properties{
+//         {"int", "$id"},
+//         {"string", "$name"},
+//     }
+//
+//     t := template.Must(template.New("template").Parse(tmp))
 
     // Execute the template for each recipient.
 
-    for _, r := range templateData {
-        err := t.Execute(os.Stdout, r)
-        if err != nil {
-            log.Println("executing template:", err)
-        }
-    }
+//     for _, r := range templateData {
+//         err := t.Execute(os.Stdout, r)
+//         if err != nil {
+//             log.Println("executing template:", err)
+//         }
+//     }
 
     printEntity();
 }
 
 func printEntity() {
-//     const tmp = `<?php
-// namespace App\Entity;
-//
-// class {{.EntityName}}
-// {
-//     public function {{.MethodName}}()
-//     {
-//         return $this->id;
-//     }
-// }
-// `
-
-    type TemplateEntity struct {
-        EntityName, MethodName string
+    type Property struct {
+        Type, Name string
     }
 
-    var templateData = []TemplateEntity{
-        {"UserEntity", "getId"},
+    var PropertiesData = []Property{
+        {"int", "$id"},
+        {"string", "$name"},
+    }
+
+
+    type TemplateEntity struct {
+        Properties []Property
+        EntityName, MethodName, TypeMethod string
+    }
+
+    var templateData = TemplateEntity{
+        EntityName: "UserEntity",
+        MethodName: "getId",
+        TypeMethod: "string",
+        Properties: PropertiesData,
     }
 
     t, err := template.ParseFiles("backend/app/template/entity.gohtml")
@@ -92,10 +94,10 @@ func printEntity() {
     }()
 
     // Execute the template for each recipient.
-    for _, r := range templateData {
-        err := t.Execute(fo, r)
-        if err != nil {
-            log.Println("executing template:", err)
-        }
+    //for _, r := range templateData {
+    err = t.Execute(fo, templateData)
+    if err != nil {
+        log.Println("executing template:", err)
     }
+    //}
 }

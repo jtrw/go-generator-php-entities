@@ -3,7 +3,10 @@ namespace App\Entity;
 
 class {{.EntityName}}
 {
-    public function {{.MethodName}}()
+{{range .Properties}}
+    private {{.Type}} {{.Name}};
+{{end}}
+    public function {{.MethodName}}(): {{.TypeMethod}}
     {
         return $this->id;
     }
