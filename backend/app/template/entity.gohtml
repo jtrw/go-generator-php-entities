@@ -1,0 +1,13 @@
+<?php
+namespace App\Entity;
+
+class {{.EntityName}}
+{
+{{range .Properties}}
+    private {{.Type}} {{.Name}};
+{{end}}
+    public function {{.MethodName}}(): {{.TypeMethod}}
+    {
+        return $this->id;
+    }
+}
