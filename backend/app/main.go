@@ -80,26 +80,30 @@ func printEntity(rows []describe.DescribeTable) {
         EntityName string
     }
 
-     var PropertiesData = []Property{
-        {"int", "$id"},
-        {"string", "$name"},
-    }
+     var PropertiesData = []Property{}
+     var MethodsData = []Method{}
 
      for _, row := range rows {
          var rowData Property
-         rowData.Type = getPreparedType(row.Type)
-         rowData.Name = "$"+getPreparedName(row.Field)
-         PropertiesData = append(PropertiesData, rowData)
-    }
+         var rowMethod Method
+        propertyName := getPreparedName(row.Field)
+        propertyType := getPreparedType(row.Type)
+        rowData.Type = propertyType
+        rowData.Name = "$"+propertyName
+        PropertiesData = append(PropertiesData, rowData)
 
+        rowMethod.MethodName = "get"+strings.Title(propertyName)
+        rowMethod.TypeMethod = propertyType
+        rowMethod.Return = propertyName;
+
+        MethodsData = append(MethodsData, rowMethod)
+
+    }
 
     var templateData = TemplateEntity{
         EntityName: "UserEntity",
         Properties: PropertiesData,
-        Methods: []Method{
-            {"getId", "int", "id"},
-            {"getName", "string", "name"},
-        },
+        Methods: MethodsData,
     }
 
     t, err := template.ParseFiles("backend/app/template/entity.gohtml")
