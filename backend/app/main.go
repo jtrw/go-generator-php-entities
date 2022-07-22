@@ -13,6 +13,11 @@ import (
 )
 
 type Options struct {
+   DbHost string `short:"h" long:"db_host" default:"127.0.0.1" description:"DB Host"`
+   DbPort string `short:"p" long:"db_port" default:"3606" description:"DB Port"`
+   DbUser string `short:"u" long:"db_user" default:"mysql_user" description:"DB User"`
+   DbPassword string `long:"db_password" default:"astalavista" description:"DB Password"`
+   DbType string `long:"db_type" default:"8080" description:"Port web server"`
    Table string `short:"t" long:"table" description:"Table for generate Entity"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
 }
@@ -62,7 +67,6 @@ func printEntity() {
     if err != nil {
        panic(err)
     }
-    //t := template.Must(template.New("template").Parse(tmp))
 
     fo, err := os.Create("output.php")
     if err != nil {
