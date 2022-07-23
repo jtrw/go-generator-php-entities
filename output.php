@@ -1,19 +1,37 @@
 <?php
 namespace App\Entity;
 
-class UserEntity
+class SettingsEntity
 {
 
+    /**
+     * @var int
+     */
     private int $settingsId;
 
+    /**
+     * @var string
+     */
     private string $key;
 
+    /**
+     * @var string
+     */
     private string $value;
 
+    /**
+     * @var int
+     */
     private int $parent;
 
+    /**
+     * @var int
+     */
     private int $type;
 
+    /**
+     * @var string
+     */
     private string $description;
 
 

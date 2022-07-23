@@ -44,7 +44,7 @@ func main() {
         log.Fatal(err)
     }
 
-    printEntity(results);
+    printEntity(getPreparedEntityName(opts.Table), results);
 }
 
 func initDb(opts Options) (*sql.DB) {
@@ -65,7 +65,7 @@ func dsn(opts Options) string {
     return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
-func printEntity(rows []describe.DescribeTable) {
+func printEntity(entityName string, rows []describe.DescribeTable) {
     type Property struct {
         Type, Name string
     }
@@ -101,7 +101,7 @@ func printEntity(rows []describe.DescribeTable) {
     }
 
     var templateData = TemplateEntity{
-        EntityName: "UserEntity",
+        EntityName: entityName,
         Properties: PropertiesData,
         Methods: MethodsData,
     }
@@ -143,7 +143,7 @@ func getPreparedType(t string) (string) {
 
     if strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
      strings.Contains(t, "time") || strings.Contains(t, "char") ||
-     strings.Contains(t, "date")  {
+     strings.Contains(t, "date") || strings.Contains(t, "text") {
         return "string"
     }
 
@@ -157,4 +157,8 @@ func getPreparedName(name string) (string) {
         name += strings.Title(word)
     }
     return name;
+}
+
+func getPreparedEntityName(name string) (string) {
+    return strings.Title(name)+"Entity"
 }
