@@ -48,7 +48,7 @@ func main() {
 }
 
 func initDb(opts Options) (*sql.DB) {
-    psqlInfo := dsn(opts)
+    psqlInfo := getMysqDsn(opts)
     connection, err := sql.Open(opts.DbType, psqlInfo)
     if err != nil {
         panic(err)
@@ -61,7 +61,7 @@ func initDb(opts Options) (*sql.DB) {
     return connection
 }
 
-func dsn(opts Options) string {
+func getMysqDsn(opts Options) string {
     return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
