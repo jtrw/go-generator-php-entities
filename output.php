@@ -1,30 +1,80 @@
 <?php
 namespace App\Entity;
 
-class UserEntity
+class SettingsEntity
 {
 
-    private int $id;
+    /**
+     * @var int
+     */
+    private int $settingsId;
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private string $key;
+
+    /**
+     * @var string
+     */
+    private string $value;
+
+    /**
+     * @var int
+     */
+    private int $parent;
+
+    /**
+     * @var int
+     */
+    private int $type;
+
+    /**
+     * @var string
+     */
+    private string $description;
 
 
-    public function getId(): int
+    public function getSettingsId(): int
     {
-        return $this->id;
+        return $this->settingsId;
     }
 
-    public function getName(): string
+    public function getKey(): string
     {
-        return $this->name;
+        return $this->key;
+    }
+
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function getParent(): int
+    {
+        return $this->parent;
+    }
+
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
 
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'settingsId' => $this->settingsId,
+            'key' => $this->key,
+            'value' => $this->value,
+            'parent' => $this->parent,
+            'type' => $this->type,
+            'description' => $this->description,
         ];
     }
 
@@ -32,8 +82,12 @@ class UserEntity
     {
         $entity = new self();
 
-        $entity->id = $fields['id'];
-        $entity->name = $fields['name'];
+        $entity->settingsId = $fields['settingsId'];
+        $entity->key = $fields['key'];
+        $entity->value = $fields['value'];
+        $entity->parent = $fields['parent'];
+        $entity->type = $fields['type'];
+        $entity->description = $fields['description'];
 
         return $entity;
     }

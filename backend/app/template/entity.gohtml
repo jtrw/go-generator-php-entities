@@ -4,6 +4,9 @@ namespace App\Entity;
 class {{.EntityName}}
 {
 {{range .Properties}}
+    /**
+     * @var {{.Type}}
+     */
     private {{.Type}} {{.Name}};
 {{end}}
 {{range .Methods}}

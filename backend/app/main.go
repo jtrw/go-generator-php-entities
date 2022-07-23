@@ -13,6 +13,7 @@ import (
    "database/sql"
    _ "github.com/go-sql-driver/mysql"
    describe "generator-php-entities/v1/backend/app/repository"
+   "strings"
 )
 
 type Options struct {
@@ -36,12 +37,14 @@ func main() {
         log.Fatal(err)
     }
 
-    printEntity();
-
     connection := initDb(opts)
-    res, _ := describe.Get(connection, opts.Table)
+    results, err := describe.Get(connection, opts.Table)
 
-    fmt.Println(res.Field)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    printEntity(getPreparedEntityName(opts.Table), results);
 }
 
 func initDb(opts Options) (*sql.DB) {
@@ -62,7 +65,7 @@ func dsn(opts Options) string {
     return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
-func printEntity() {
+func printEntity(entityName string, rows []describe.DescribeTable) {
     type Property struct {
         Type, Name string
     }
@@ -77,17 +80,30 @@ func printEntity() {
         EntityName string
     }
 
-     var PropertiesData = []Property{
-        {"int", "$id"},
-        {"string", "$name"},
+     var PropertiesData = []Property{}
+     var MethodsData = []Method{}
+
+     for _, row := range rows {
+         var rowData Property
+         var rowMethod Method
+        propertyName := getPreparedName(row.Field)
+        propertyType := getPreparedType(row.Type)
+        rowData.Type = propertyType
+        rowData.Name = "$"+propertyName
+        PropertiesData = append(PropertiesData, rowData)
+
+        rowMethod.MethodName = "get"+strings.Title(propertyName)
+        rowMethod.TypeMethod = propertyType
+        rowMethod.Return = propertyName;
+
+        MethodsData = append(MethodsData, rowMethod)
+
     }
+
     var templateData = TemplateEntity{
-        EntityName: "UserEntity",
+        EntityName: entityName,
         Properties: PropertiesData,
-        Methods: []Method{
-            {"getId", "int", "id"},
-            {"getName", "string", "name"},
-        },
+        Methods: MethodsData,
     }
 
     t, err := template.ParseFiles("backend/app/template/entity.gohtml")
@@ -113,4 +129,36 @@ func printEntity() {
         log.Println("executing template:", err)
     }
     //}
+}
+
+func getPreparedType(t string) (string) {
+
+    if strings.Contains(t, "int") {
+        return "int"
+    }
+
+    if strings.Contains(t, "decimal") || strings.Contains(t, "float") {
+        return "float"
+    }
+
+    if strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
+     strings.Contains(t, "time") || strings.Contains(t, "char") ||
+     strings.Contains(t, "date") || strings.Contains(t, "text") {
+        return "string"
+    }
+
+    return t
+}
+
+func getPreparedName(name string) (string) {
+    words := strings.Split(name, "_")
+    name = strings.ToLower(words[0])
+    for _, word := range words[1:] {
+        name += strings.Title(word)
+    }
+    return name;
+}
+
+func getPreparedEntityName(name string) (string) {
+    return strings.Title(name)+"Entity"
 }
