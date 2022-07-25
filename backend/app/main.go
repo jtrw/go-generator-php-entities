@@ -56,10 +56,10 @@ func main() {
         log.Fatal(err)
     }
 
-    printEntity(getPreparedEntityName(opts.Table), results);
+    generateEntity(getPreparedEntityName(opts.Table), results);
 }
 
-func printEntity(entityName string, rows []describe.DescribeTable) {
+func generateEntity(entityName string, rows []describe.DescribeTable) {
     type Property struct {
         Type, Name string
     }
@@ -105,7 +105,7 @@ func printEntity(entityName string, rows []describe.DescribeTable) {
        panic(err)
     }
 
-    fo, err := os.Create("output.php")
+    fo, err := os.Create(entityName+".php")
     if err != nil {
         panic(err)
     }
@@ -116,13 +116,10 @@ func printEntity(entityName string, rows []describe.DescribeTable) {
         }
     }()
 
-    // Execute the template for each recipient.
-    //for _, r := range templateData {
     err = t.Execute(fo, templateData)
     if err != nil {
         log.Println("executing template:", err)
     }
-    //}
 }
 
 func getPreparedType(t string) (string) {
