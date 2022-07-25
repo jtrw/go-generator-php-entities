@@ -10,12 +10,18 @@ class {{.EntityName}}
     private {{.Type}} {{.Name}};
 {{end}}
 {{range .Methods}}
+    /**
+     * @return {{.TypeMethod}}
+     */
     public function {{.MethodName}}(): {{.TypeMethod}}
     {
         return $this->{{.Return}};
     }
 {{end}}
 
+    /**
+    * @return array
+    */
     public function toArray(): array
     {
         return [{{range .Methods}}
@@ -23,6 +29,11 @@ class {{.EntityName}}
         ];
     }
 
+
+    /**
+    * @param array $fields
+    * @return static
+    */
     public static function fromArray(array $fields): self
     {
         $entity = new self();

@@ -19,14 +19,12 @@ func Get(connection *sql.DB, table string) ([]DescribeTable, error) {
 
     rows, err := connection.Query(sqlStatement)
     if err != nil {
-
         return nil, err
     }
     for rows.Next() {
         var infoRow DescribeTable
         errRow := rows.Scan(&infoRow.Field, &infoRow.Type, &infoRow.Null, &infoRow.Key,  &infoRow.Default, &infoRow.Extra)
         if errRow != nil {
-
             return nil, errRow
         }
         infoTable = append(infoTable, infoRow)
