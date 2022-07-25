@@ -1,7 +1,7 @@
 package main
 
 import (
-  "fmt"
+  //"fmt"
   "log"
   "os"
   "github.com/jessevdk/go-flags"
@@ -10,9 +10,9 @@ import (
   //"bytes"
   //"github.com/joho/godotenv"
   "text/template"
-   "database/sql"
-   _ "github.com/go-sql-driver/mysql"
+  // "database/sql"
    describe "generator-php-entities/v1/backend/app/repository"
+   connection "generator-php-entities/v1/backend/app/db"
    "strings"
 )
 
@@ -23,7 +23,7 @@ type Options struct {
    DbUser string `short:"u" long:"db_user" default:"mysql_user" description:"DB User"`
    DbPassword string `long:"db_password" default:"astalavista" description:"DB Password"`
    DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
-   Table string `short:"t" long:"table" description:"Table for generate Entity"`
+   Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
 }
 
@@ -37,32 +37,26 @@ func main() {
         log.Fatal(err)
     }
 
-    connection := initDb(opts)
-    results, err := describe.Get(connection, opts.Table)
+    dbSettings := connection.Settings {
+        Host: opts.DbHost,
+        Port: opts.DbPort,
+        User: opts.DbUser,
+        Pass: opts.DbPassword,
+        DbName: opts.DbName,
+        Type: opts.DbType,
+    }
+
+    conn, cErr := connection.Init(dbSettings)
+    if (cErr != nil) {
+        log.Fatal(cErr)
+    }
+    results, err := describe.Get(conn, opts.Table)
 
     if err != nil {
         log.Fatal(err)
     }
 
     printEntity(getPreparedEntityName(opts.Table), results);
-}
-
-func initDb(opts Options) (*sql.DB) {
-    psqlInfo := getMysqDsn(opts)
-    connection, err := sql.Open(opts.DbType, psqlInfo)
-    if err != nil {
-        panic(err)
-    }
-
-    err = connection.Ping()
-    if err != nil {
-        panic(err)
-    }
-    return connection
-}
-
-func getMysqDsn(opts Options) string {
-    return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
 }
 
 func printEntity(entityName string, rows []describe.DescribeTable) {

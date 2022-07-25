@@ -2,26 +2,34 @@ package db
 
 import (
   "fmt"
-  "log"
-  "text/template"
    "database/sql"
    _ "github.com/go-sql-driver/mysql"
    "errors"
 )
 
-func init(opts Options) (*sql.DB, error) {
+type Settings struct {
+    Host string
+    Port string
+    User string
+    Pass string
+    DbName string
+    Type string
+	Connection *sql.DB
+}
+
+func Init(s Settings) (*sql.DB, error) {
     var dsn string
 
-    switch opts.DbType {
+    switch s.Type {
         case "mysql":
-           dsn = getMysqlDsn(opts)
+           dsn = getMysqlDsn(s)
         case "pgsql":
-            dsn = getPgsqlDsn(opts)
+            dsn = getPgsqlDsn(s)
         default:
             errors.New("DB type is not supported")
     }
 
-    connection, err := sql.Open(opts.DbType, dsn)
+    connection, err := sql.Open(s.Type, dsn)
     if err != nil {
         return nil, err
     }
@@ -30,20 +38,20 @@ func init(opts Options) (*sql.DB, error) {
     if err != nil {
         return nil, err
     }
-
+    s.Connection = connection
     return connection, nil
 }
 
-func getMysqlDsn(opts Options) (string) {
-    return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", opts.DbUser, opts.DbPassword, opts.DbHost, opts.DbPort, opts.DbName)
+func getMysqlDsn(s Settings) (string) {
+    return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", s.User, s.Pass, s.Host, s.Port, s.DbName)
 }
 
-func getPgsqlDsn(opts Options) (string) {
+func getPgsqlDsn(s Settings) (string) {
     return fmt.Sprintf(
         "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        opts.DbHost,
-        opts.DbPort,
-        opts.DbUser,
-        opts.DbPassword,
-        opts.DbName)
+        s.Host,
+        s.Port,
+        s.User,
+        s.Pass,
+        s.DbName)
 }
