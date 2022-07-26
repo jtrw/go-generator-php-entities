@@ -2,6 +2,7 @@ package repository
 
 import (
     "database/sql"
+     field "generator-php-entities/v1/backend/app/generator"
 )
 
 type DescribeTable struct {
@@ -13,8 +14,8 @@ type DescribeTable struct {
 	Extra string `db:"Extra"`
 }
 
-func Get(connection *sql.DB, table string) ([]DescribeTable, error) {
-    var infoTable []DescribeTable
+func Get(connection *sql.DB, table string) ([]field.Info, error) {
+    var infoTable []field.Info
     sqlStatement := "DESCRIBE "+table
 
     rows, err := connection.Query(sqlStatement)
@@ -27,7 +28,11 @@ func Get(connection *sql.DB, table string) ([]DescribeTable, error) {
         if errRow != nil {
             return nil, errRow
         }
-        infoTable = append(infoTable, infoRow)
+        filedInfo := field.Info {
+            Field: infoRow.Field,
+            Type: infoRow.Type,
+        }
+        infoTable = append(infoTable, filedInfo)
     }
 
     return infoTable, err
