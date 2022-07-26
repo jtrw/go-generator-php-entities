@@ -1,7 +1,7 @@
 package generator
 
 import (
-  //"fmt"
+  "fmt"
   "log"
   "os"
   "text/template"
@@ -22,9 +22,13 @@ type TemplateEntity struct {
     EntityName string
 }
 
-func Generate(entityName string, rows []Info) {
-     var PropertiesData = []Property{}
-     var MethodsData = []Method{}
+func Generate(tableName string, rows []Info) {
+    entityName := getEntityNameFromTableName(tableName)
+    fmt.Printf("Enter Entity name default '%s': ", entityName)
+    fmt.Scanln(&entityName)
+
+    var PropertiesData = []Property{}
+    var MethodsData = []Method{}
 
      for _, row := range rows {
          var rowData Property
@@ -100,5 +104,15 @@ func getPreparedName(name string) (string) {
 }
 
 func getPreparedEntityName(name string) (string) {
+    return strings.Title(name)+"Entity"
+}
+
+func getEntityNameFromTableName(name string) (string) {
+    nameLen := len(name)
+    lastSymbol := string(name[nameLen-1])
+    if lastSymbol == "s" {
+        name = strings.TrimSuffix(name, "s")
+    }
+
     return strings.Title(name)+"Entity"
 }

@@ -13,7 +13,6 @@ import (
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
-   "strings"
 )
 
 type Options struct {
@@ -60,14 +59,9 @@ func main() {
         log.Fatal(err)
     }
     if opts.Type == TYPE_ENTITY {
-        entity.Generate(getPreparedEntityName(opts.Table), results)
+        entity.Generate(opts.Table, results)
     } else {
         log.Fatal("Type of generate files not found")
     }
 
-}
-
-
-func getPreparedEntityName(name string) (string) {
-    return strings.Title(name)+"Entity"
 }
