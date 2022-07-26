@@ -25,6 +25,7 @@ type Options struct {
 
    Type string `short:"y" long:"type" default:"entity" description:"Type of generates files"`
    Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
+   OutputPath  string `short:"o" long:"output_path" default:"" description:"Path where generation file(s) are saved"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
 }
 
@@ -59,7 +60,11 @@ func main() {
         log.Fatal(err)
     }
     if opts.Type == TYPE_ENTITY {
-        entity.Generate(opts.Table, results)
+        var entityOptions = entity.EntityOptions {
+            Table: opts.Table,
+            OutputPath: opts.OutputPath,
+        }
+        entity.Generate(entityOptions, results)
     } else {
         log.Fatal("Type of generate files not found")
     }

@@ -22,7 +22,12 @@ type TemplateEntity struct {
     EntityName string
 }
 
-func Generate(tableName string, rows []Info) {
+type EntityOptions struct {
+    Table, OutputPath string
+}
+
+func Generate(opts EntityOptions, rows []Info) {
+    tableName := opts.Table
     entityName := getEntityNameFromTableName(tableName)
     fmt.Printf("Enter Entity name default '%s': ", entityName)
     fmt.Scanln(&entityName)
@@ -57,8 +62,13 @@ func Generate(tableName string, rows []Info) {
     if err != nil {
        panic(err)
     }
+    oFile := entityName+".php"
+    oPath := ""
+    if len(opts.OutputPath) > 0 {
+        oPath = opts.OutputPath
+    }
 
-    fo, err := os.Create(entityName+".php")
+    fo, err := os.Create(oPath+oFile)
     if err != nil {
         panic(err)
     }
@@ -114,5 +124,26 @@ func getEntityNameFromTableName(name string) (string) {
         name = strings.TrimSuffix(name, "s")
     }
 
-    return strings.Title(name)+"Entity"
+    return snakeCaseToCamelCase(name)+"Entity"
+}
+
+func snakeCaseToCamelCase(inputUnderScoreStr string) (camelCase string) {
+    isToUpper := false
+    for k, v := range inputUnderScoreStr {
+        if k == 0 {
+            camelCase = strings.ToUpper(string(inputUnderScoreStr[0]))
+        } else {
+            if isToUpper {
+                camelCase += strings.ToUpper(string(v))
+                isToUpper = false
+            } else {
+                 if v == '_' {
+                    isToUpper = true
+                 } else {
+                    camelCase += string(v)
+                 }
+            }
+        }
+    }
+    return
 }
