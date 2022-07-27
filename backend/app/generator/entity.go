@@ -86,7 +86,6 @@ func Generate(opts EntityOptions, rows []Info) {
 }
 
 func getPreparedType(t string) (string) {
-
     if strings.Contains(t, "int") {
         return "int"
     }
@@ -100,7 +99,7 @@ func getPreparedType(t string) (string) {
      strings.Contains(t, "date") || strings.Contains(t, "text") {
         return "string"
     }
-
+    log.Println("Undefined Type: "+t);
     return t
 }
 
