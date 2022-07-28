@@ -13,6 +13,7 @@ import (
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
+   jbolt "generator-php-entities/v1/backend/app/store/jbolt"
 )
 
 type Options struct {
@@ -30,6 +31,7 @@ type Options struct {
 }
 
 const TYPE_ENTITY string = "entity"
+const bucket string = "credentials/db"
 
 func main() {
     var opts Options
@@ -40,6 +42,8 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
+
+    bolt := jbolt.Open(opts.StorePath)
 
     dbSettings := connection.Settings {
         Host: opts.DbHost,
