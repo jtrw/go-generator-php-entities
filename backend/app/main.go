@@ -45,6 +45,30 @@ func main() {
 
     bolt := jbolt.Open(opts.StorePath)
 
+    if len(opts.DbName) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_NAME", opts.DbName)
+    }
+
+    if len(opts.DbHost) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_HOST", opts.DbHost)
+    }
+
+    if len(opts.DbPort) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_PORT", opts.DbPort)
+    }
+
+    if len(opts.DbUser) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_USER", opts.DbUser)
+    }
+
+    if len(opts.DbPassword) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_PASSWORD", opts.DbPassword)
+    }
+
+    if len(opts.DbType) > 0 {
+        jbolt.Set(bolt, bucket, "last/DB_TYPE", opts.DbType)
+    }
+
     dbSettings := connection.Settings {
         Host: opts.DbHost,
         Port: opts.DbPort,
