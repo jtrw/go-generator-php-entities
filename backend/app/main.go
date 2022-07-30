@@ -45,8 +45,17 @@ func main() {
 
     bolt := jbolt.Open(opts.StoragePath)
 
+
     if len(opts.DbName) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_NAME", opts.DbName)
+    } else {
+        jDbName := jbolt.Get(bolt.DB, bucket, "last/DB_NAME")
+
+        if len(jDbName) <= 0 {
+             log.Fatal("DB name is required")
+        }
+
+        opts.DbName = jDbName
     }
 
     if len(opts.DbHost) > 0 {
