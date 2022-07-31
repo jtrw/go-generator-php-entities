@@ -60,22 +60,62 @@ func main() {
 
     if len(opts.DbHost) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_HOST", opts.DbHost)
+    } else {
+         jDbHost := jbolt.Get(bolt.DB, bucket, "last/DB_HOST")
+
+        if len(jDbHost) <= 0 {
+             log.Fatal("DB host is required")
+        }
+
+        opts.DbHost = jDbHost
     }
 
     if len(opts.DbPort) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_PORT", opts.DbPort)
+    } else {
+        jDbPort := jbolt.Get(bolt.DB, bucket, "last/DB_PORT")
+
+        if len(jDbPort) <= 0 {
+             log.Fatal("DB port is required")
+        }
+
+        opts.DbPort = jDbPort
     }
 
     if len(opts.DbUser) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_USER", opts.DbUser)
+    } else {
+        jDbUser := jbolt.Get(bolt.DB, bucket, "last/DB_USER")
+
+        if len(jDbUser) <= 0 {
+             log.Fatal("DB user is required")
+        }
+
+        opts.DbUser = jDbUser
     }
 
     if len(opts.DbPassword) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_PASSWORD", opts.DbPassword)
+    } else {
+        jDbPass := jbolt.Get(bolt.DB, bucket, "last/DB_PASSWORD")
+
+        if len(jDbPass) <= 0 {
+             log.Fatal("DB password is required")
+        }
+
+        opts.DbPassword = jDbPass
     }
 
     if len(opts.DbType) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
+    } else {
+        jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
+
+        if len(jDbType) <= 0 {
+             log.Fatal("DB type is required")
+        }
+
+        opts.DbType = jDbType
     }
 
     dbSettings := connection.Settings {
