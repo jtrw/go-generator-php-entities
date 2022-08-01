@@ -17,11 +17,11 @@ import (
 )
 
 type Options struct {
-   DbName string `short:"n" long:"db_name" default:"local_uniquecasino" description:"DB Name"`
+   DbName string `short:"n" long:"db_name" default:"" description:"DB Name"`
    DbHost string `short:"h" long:"db_host" default:"127.0.0.1" description:"DB Host"`
    DbPort string `short:"p" long:"db_port" default:"3306" description:"DB Port"`
-   DbUser string `short:"u" long:"db_user" default:"mysql_user" description:"DB User"`
-   DbPassword string `long:"db_password" default:"astalavista" description:"DB Password"`
+   DbUser string `short:"u" long:"db_user" default:"" description:"DB User"`
+   DbPassword string `long:"db_password" default:"" description:"DB Password"`
    DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
 
    Type string `short:"y" long:"type" default:"entity" description:"Type of generates files"`
@@ -43,6 +43,38 @@ func main() {
         log.Fatal(err)
     }
 
+    opts = getDbCredentialsFromStore(opts)
+
+    dbSettings := connection.Settings {
+        Host: opts.DbHost,
+        Port: opts.DbPort,
+        User: opts.DbUser,
+        Pass: opts.DbPassword,
+        DbName: opts.DbName,
+        Type: opts.DbType,
+    }
+
+    conn, cErr := connection.Init(dbSettings)
+    if (cErr != nil) {
+        log.Fatal(cErr)
+    }
+    results, err := describe.Get(conn, opts.Table)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    if opts.Type == TYPE_ENTITY {
+        var entityOptions = entity.EntityOptions {
+            Table: opts.Table,
+            OutputPath: opts.OutputPath,
+        }
+        entity.Generate(entityOptions, results)
+    } else {
+        log.Fatal("Type of generate files not found")
+    }
+}
+
+func getDbCredentialsFromStore(opts Options) (Options) {
     bolt := jbolt.Open(opts.StoragePath)
 
 
@@ -118,32 +150,5 @@ func main() {
         opts.DbType = jDbType
     }
 
-    dbSettings := connection.Settings {
-        Host: opts.DbHost,
-        Port: opts.DbPort,
-        User: opts.DbUser,
-        Pass: opts.DbPassword,
-        DbName: opts.DbName,
-        Type: opts.DbType,
-    }
-
-    conn, cErr := connection.Init(dbSettings)
-    if (cErr != nil) {
-        log.Fatal(cErr)
-    }
-    results, err := describe.Get(conn, opts.Table)
-
-    if err != nil {
-        log.Fatal(err)
-    }
-    if opts.Type == TYPE_ENTITY {
-        var entityOptions = entity.EntityOptions {
-            Table: opts.Table,
-            OutputPath: opts.OutputPath,
-        }
-        entity.Generate(entityOptions, results)
-    } else {
-        log.Fatal("Type of generate files not found")
-    }
-
+    return opts
 }
