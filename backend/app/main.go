@@ -3,13 +3,8 @@ package main
 import (
   //"fmt"
   "log"
-  //"os"
+  "errors"
   "github.com/jessevdk/go-flags"
-  //"net/http"
-  //"io/ioutil"
-  //"bytes"
-  //"github.com/joho/godotenv"
-  // "database/sql"
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
@@ -43,7 +38,11 @@ func main() {
         log.Fatal(err)
     }
 
-    opts = getDbCredentialsFromStore(opts)
+    opts, err = getDbCredentialsFromStore(opts)
+
+    if err != nil {
+        log.Fatal(err)
+    }
 
     dbSettings := connection.Settings {
         Host: opts.DbHost,
@@ -74,7 +73,7 @@ func main() {
     }
 }
 
-func getDbCredentialsFromStore(opts Options) (Options) {
+func getDbCredentialsFromStore(opts Options) (Options, error) {
     bolt := jbolt.Open(opts.StoragePath)
 
 
@@ -84,7 +83,7 @@ func getDbCredentialsFromStore(opts Options) (Options) {
         jDbName := jbolt.Get(bolt.DB, bucket, "last/DB_NAME")
 
         if len(jDbName) <= 0 {
-             log.Fatal("DB name is required")
+            return opts, errors.New("DB name is required")
         }
 
         opts.DbName = jDbName
@@ -96,7 +95,7 @@ func getDbCredentialsFromStore(opts Options) (Options) {
          jDbHost := jbolt.Get(bolt.DB, bucket, "last/DB_HOST")
 
         if len(jDbHost) <= 0 {
-             log.Fatal("DB host is required")
+             return opts, errors.New("DB host is required")
         }
 
         opts.DbHost = jDbHost
@@ -108,7 +107,7 @@ func getDbCredentialsFromStore(opts Options) (Options) {
         jDbPort := jbolt.Get(bolt.DB, bucket, "last/DB_PORT")
 
         if len(jDbPort) <= 0 {
-             log.Fatal("DB port is required")
+            return opts, errors.New("DB port is required")
         }
 
         opts.DbPort = jDbPort
@@ -120,7 +119,7 @@ func getDbCredentialsFromStore(opts Options) (Options) {
         jDbUser := jbolt.Get(bolt.DB, bucket, "last/DB_USER")
 
         if len(jDbUser) <= 0 {
-             log.Fatal("DB user is required")
+             return opts, errors.New("DB user is required")
         }
 
         opts.DbUser = jDbUser
@@ -132,7 +131,7 @@ func getDbCredentialsFromStore(opts Options) (Options) {
         jDbPass := jbolt.Get(bolt.DB, bucket, "last/DB_PASSWORD")
 
         if len(jDbPass) <= 0 {
-             log.Fatal("DB password is required")
+             return opts, errors.New("DB password is required")
         }
 
         opts.DbPassword = jDbPass
@@ -144,11 +143,11 @@ func getDbCredentialsFromStore(opts Options) (Options) {
         jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
 
         if len(jDbType) <= 0 {
-             log.Fatal("DB type is required")
+             return opts, errors.New("DB type is required")
         }
 
         opts.DbType = jDbType
     }
 
-    return opts
+    return opts, nil
 }
