@@ -76,7 +76,6 @@ func main() {
 func getDbCredentialsFromStore(opts Options) (Options, error) {
     bolt := jbolt.Open(opts.StoragePath)
 
-
     if len(opts.DbName) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_NAME", opts.DbName)
     } else {
@@ -150,4 +149,18 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
     }
 
     return opts, nil
+}
+
+func getValueByKey(bolt jbolt.Bolt, opts Options, key string) (string, error) {
+    if len(opts.DbType) > 0 {
+        jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
+    } else {
+        jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
+
+        if len(jDbType) <= 0 {
+             return "", errors.New("DB type is required")
+        }
+
+        return jDbType, nil
+    }
 }
