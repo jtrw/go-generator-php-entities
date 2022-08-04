@@ -6,6 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/nilBora/bolt v1.3.1
+	github.com/oleiade/reflections v1.0.1
 )
 
 require (
