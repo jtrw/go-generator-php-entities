@@ -79,32 +79,36 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
     bolt := jbolt.Open(opts.StoragePath)
 
     opts.fillFromStoreByKey(bolt, "DbPort")
+    opts.fillFromStoreByKey(bolt, "DbName")
+    opts.fillFromStoreByKey(bolt, "DbHost")
+    opts.fillFromStoreByKey(bolt, "DbUser")
+    opts.fillFromStoreByKey(bolt, "DbPassword")
+    opts.fillFromStoreByKey(bolt, "DbType")
 
-    log.Println(opts)
 
-    if len(opts.DbName) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_NAME", opts.DbName)
-    } else {
-        jDbName := jbolt.Get(bolt.DB, bucket, "last/DB_NAME")
+//     if len(opts.DbName) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_NAME", opts.DbName)
+//     } else {
+//         jDbName := jbolt.Get(bolt.DB, bucket, "last/DB_NAME")
+//
+//         if len(jDbName) <= 0 {
+//             return opts, errors.New("DB name is required")
+//         }
+//
+//         opts.DbName = jDbName
+//     }
 
-        if len(jDbName) <= 0 {
-            return opts, errors.New("DB name is required")
-        }
-
-        opts.DbName = jDbName
-    }
-
-    if len(opts.DbHost) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_HOST", opts.DbHost)
-    } else {
-         jDbHost := jbolt.Get(bolt.DB, bucket, "last/DB_HOST")
-
-        if len(jDbHost) <= 0 {
-             return opts, errors.New("DB host is required")
-        }
-
-        opts.DbHost = jDbHost
-    }
+//     if len(opts.DbHost) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_HOST", opts.DbHost)
+//     } else {
+//          jDbHost := jbolt.Get(bolt.DB, bucket, "last/DB_HOST")
+//
+//         if len(jDbHost) <= 0 {
+//              return opts, errors.New("DB host is required")
+//         }
+//
+//         opts.DbHost = jDbHost
+//     }
 //
 //     if len(opts.DbPort) > 0 {
 //         jbolt.Set(bolt.DB, bucket, "last/DB_PORT", opts.DbPort)
@@ -118,55 +122,52 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
 //         opts.DbPort = jDbPort
 //     }
 
-    if len(opts.DbUser) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_USER", opts.DbUser)
-    } else {
-        jDbUser := jbolt.Get(bolt.DB, bucket, "last/DB_USER")
+//     if len(opts.DbUser) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_USER", opts.DbUser)
+//     } else {
+//         jDbUser := jbolt.Get(bolt.DB, bucket, "last/DB_USER")
+//
+//         if len(jDbUser) <= 0 {
+//              return opts, errors.New("DB user is required")
+//         }
+//
+//         opts.DbUser = jDbUser
+//     }
 
-        if len(jDbUser) <= 0 {
-             return opts, errors.New("DB user is required")
-        }
+//     if len(opts.DbPassword) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_PASSWORD", opts.DbPassword)
+//     } else {
+//         jDbPass := jbolt.Get(bolt.DB, bucket, "last/DB_PASSWORD")
+//
+//         if len(jDbPass) <= 0 {
+//              return opts, errors.New("DB password is required")
+//         }
+//
+//         opts.DbPassword = jDbPass
+//     }
 
-        opts.DbUser = jDbUser
-    }
-
-    if len(opts.DbPassword) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_PASSWORD", opts.DbPassword)
-    } else {
-        jDbPass := jbolt.Get(bolt.DB, bucket, "last/DB_PASSWORD")
-
-        if len(jDbPass) <= 0 {
-             return opts, errors.New("DB password is required")
-        }
-
-        opts.DbPassword = jDbPass
-    }
-
-    if len(opts.DbType) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
-    } else {
-        jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
-
-        if len(jDbType) <= 0 {
-             return opts, errors.New("DB type is required")
-        }
-
-        opts.DbType = jDbType
-    }
+//     if len(opts.DbType) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
+//     } else {
+//         jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
+//
+//         if len(jDbType) <= 0 {
+//              return opts, errors.New("DB type is required")
+//         }
+//
+//         opts.DbType = jDbType
+//     }
 
     return opts, nil
 }
 
 func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
     value, _ := reflections.GetField(opts, key)
-    log.Println(value)
     valueString := value.(string)
     boltKey := "last/"+key
     if len(valueString) > 0 {
-        log.Println("YESSS")
         jbolt.Set(bolt.DB, bucket, boltKey, valueString)
     } else {
-        log.Println("NO")
         value := jbolt.Get(bolt.DB, bucket, boltKey)
 
         if len(value) <= 0 {
@@ -175,7 +176,6 @@ func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
 
         reflections.SetField(opts, key, value)
     }
-    log.Println(opts)
     return nil
 }
 
