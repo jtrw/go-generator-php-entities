@@ -4,7 +4,9 @@ import (
   //"fmt"
   "log"
   "errors"
+  "reflect"
   "github.com/jessevdk/go-flags"
+  "github.com/oleiade/reflections"
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
@@ -14,7 +16,7 @@ import (
 type Options struct {
    DbName string `short:"n" long:"db_name" default:"" description:"DB Name"`
    DbHost string `short:"h" long:"db_host" default:"127.0.0.1" description:"DB Host"`
-   DbPort string `short:"p" long:"db_port" default:"3306" description:"DB Port"`
+   DbPort string `short:"p" long:"db_port" default:"" description:"DB Port"`
    DbUser string `short:"u" long:"db_user" default:"" description:"DB User"`
    DbPassword string `long:"db_password" default:"" description:"DB Password"`
    DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
@@ -76,6 +78,10 @@ func main() {
 func getDbCredentialsFromStore(opts Options) (Options, error) {
     bolt := jbolt.Open(opts.StoragePath)
 
+    opts.fillFromStoreByKey(bolt, "DbPort")
+
+    log.Println(opts)
+
     if len(opts.DbName) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_NAME", opts.DbName)
     } else {
@@ -99,18 +105,18 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
 
         opts.DbHost = jDbHost
     }
-
-    if len(opts.DbPort) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_PORT", opts.DbPort)
-    } else {
-        jDbPort := jbolt.Get(bolt.DB, bucket, "last/DB_PORT")
-
-        if len(jDbPort) <= 0 {
-            return opts, errors.New("DB port is required")
-        }
-
-        opts.DbPort = jDbPort
-    }
+//
+//     if len(opts.DbPort) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_PORT", opts.DbPort)
+//     } else {
+//         jDbPort := jbolt.Get(bolt.DB, bucket, "last/DB_PORT")
+//
+//         if len(jDbPort) <= 0 {
+//             return opts, errors.New("DB port is required")
+//         }
+//
+//         opts.DbPort = jDbPort
+//     }
 
     if len(opts.DbUser) > 0 {
         jbolt.Set(bolt.DB, bucket, "last/DB_USER", opts.DbUser)
@@ -151,16 +157,51 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
     return opts, nil
 }
 
-func getValueByKey(bolt jbolt.Bolt, opts Options, key string) (string, error) {
-    if len(opts.DbType) > 0 {
-        jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
+func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
+    value, _ := reflections.GetField(opts, key)
+    log.Println(value)
+    valueString := value.(string)
+    boltKey := "last/"+key
+    if len(valueString) > 0 {
+        log.Println("YESSS")
+        jbolt.Set(bolt.DB, bucket, boltKey, valueString)
     } else {
-        jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
+        log.Println("NO")
+        value := jbolt.Get(bolt.DB, bucket, boltKey)
 
-        if len(jDbType) <= 0 {
-             return "", errors.New("DB type is required")
+        if len(value) <= 0 {
+            return errors.New("DB "+key+" is required")
         }
 
-        return jDbType, nil
+        reflections.SetField(opts, key, value)
     }
+    log.Println(opts)
+    return nil
 }
+
+func (opts Options) getField(field string) string {
+    r := reflect.ValueOf(opts)
+    f := reflect.Indirect(r).FieldByName(field)
+    return string(f.String())
+}
+
+func (opts Options) setField(key, value string)  {
+    r := reflect.ValueOf(opts)
+    f := reflect.Indirect(r).FieldByName(key)
+    f.SetString(value)
+}
+
+
+// func getValueByKey(bolt jbolt.Bolt, opts Options, key string) (string, error) {
+//     if len(opts.DbType) > 0 {
+//         jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
+//     } else {
+//         jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
+//
+//         if len(jDbType) <= 0 {
+//              return "", errors.New("DB type is required")
+//         }
+//
+//         return jDbType, nil
+//     }
+// }
