@@ -80,7 +80,10 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
 
     keys := [6]string{"DbPort", "DbName", "DbHost", "DbUser", "DbPassword", "DbType"}
     for _, val := range keys {
-        opts.fillFromStoreByKey(bolt, val)
+        err := opts.fillFromStoreByKey(bolt, val)
+        if err != nil {
+            return opts, err
+        }
     }
 
     return opts, nil
@@ -115,18 +118,3 @@ func (opts Options) setField(key, value string)  {
     f := reflect.Indirect(r).FieldByName(key)
     f.SetString(value)
 }
-
-
-// func getValueByKey(bolt jbolt.Bolt, opts Options, key string) (string, error) {
-//     if len(opts.DbType) > 0 {
-//         jbolt.Set(bolt.DB, bucket, "last/DB_TYPE", opts.DbType)
-//     } else {
-//         jDbType := jbolt.Get(bolt.DB, bucket, "last/DB_TYPE")
-//
-//         if len(jDbType) <= 0 {
-//              return "", errors.New("DB type is required")
-//         }
-//
-//         return jDbType, nil
-//     }
-// }
