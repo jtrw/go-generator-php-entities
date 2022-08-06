@@ -15,11 +15,11 @@ import (
 
 type Options struct {
    DbName string `short:"n" long:"db_name" default:"" description:"DB Name"`
-   DbHost string `short:"h" long:"db_host" default:"127.0.0.1" description:"DB Host"`
+   DbHost string `short:"h" long:"db_host" default:"" description:"DB Host"`
    DbPort string `short:"p" long:"db_port" default:"" description:"DB Port"`
    DbUser string `short:"u" long:"db_user" default:"" description:"DB User"`
    DbPassword string `long:"db_password" default:"" description:"DB Password"`
-   DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
+   DbType string `long:"db_type" default:"" description:"Type of DB"`
 
    Type string `short:"y" long:"type" default:"entity" description:"Type of generates files"`
    Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
@@ -90,11 +90,10 @@ func getDbCredentialsFromStore(opts Options) (Options, error) {
 }
 
 func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
-    value, _ := reflections.GetField(opts, key)
-    valueString := value.(string)
+    value := opts.GetField(key)
     boltKey := "last/"+key
-    if len(valueString) > 0 {
-        jbolt.Set(bolt.DB, bucket, boltKey, valueString)
+    if len(value) > 0 {
+        jbolt.Set(bolt.DB, bucket, boltKey, value)
     } else {
         value := jbolt.Get(bolt.DB, bucket, boltKey)
 
@@ -107,14 +106,8 @@ func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
     return nil
 }
 
-func (opts Options) getField(field string) string {
+func (opts Options) GetField(field string) string {
     r := reflect.ValueOf(opts)
     f := reflect.Indirect(r).FieldByName(field)
     return string(f.String())
-}
-
-func (opts Options) setField(key, value string)  {
-    r := reflect.ValueOf(opts)
-    f := reflect.Indirect(r).FieldByName(key)
-    f.SetString(value)
 }
