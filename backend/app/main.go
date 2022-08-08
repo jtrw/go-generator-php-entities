@@ -1,7 +1,7 @@
 package main
 
 import (
-  //"fmt"
+  "fmt"
   "log"
   "errors"
   "reflect"
@@ -43,7 +43,8 @@ func main() {
     bolt := jbolt.Open(opts.StoragePath)
 
     if len(opts.Profile) > 0 && opts.Profile == "list" {
-       //... Display profiles
+        log.Println("1 - db_name - mysql, 2 - db_name - pgsql")
+        return
     }
 
     opts, err = getDbCredentialsFromStore(opts, bolt)
@@ -70,6 +71,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
+
     if opts.Type == TYPE_ENTITY {
         var entityOptions = entity.EntityOptions {
             Table: opts.Table,
@@ -95,7 +97,8 @@ func getDbCredentialsFromStore(opts Options, bolt *jbolt.Bolt) (Options, error) 
 
 func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
     value := opts.GetField(key)
-    boltKey := "last/"+key
+    boltKey := getBoltKey(key, opts.Profile)
+
     if len(value) > 0 {
         jbolt.Set(bolt.DB, bucket, boltKey, value)
     } else {
@@ -108,6 +111,18 @@ func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
         reflections.SetField(opts, key, value)
     }
     return nil
+}
+
+func getBoltKey(key, profile string) (string) {
+    chunk := "last"
+
+    if len(profile) > 0 {
+        chunk =  fmt.Sprintf("profile/%s", profile, key)
+    }
+    boltKey := fmt.Sprintf("%s/%s", chunk, key)
+
+
+    return boltKey
 }
 
 func (opts Options) GetField(field string) string {
