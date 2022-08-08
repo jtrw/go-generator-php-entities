@@ -25,6 +25,7 @@ type Options struct {
    Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
    OutputPath  string `short:"o" long:"output_path" default:"" description:"Path where generation file(s) are saved"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
+   Profile string `long:"profile" description:"Profile's credentials. Command 'list' for display all profiles"`
 }
 
 const TYPE_ENTITY string = "entity"
@@ -39,8 +40,13 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
+    bolt := jbolt.Open(opts.StoragePath)
 
-    opts, err = getDbCredentialsFromStore(opts)
+    if len(opts.Profile) > 0 && opts.Profile == "list" {
+       //... Display profiles
+    }
+
+    opts, err = getDbCredentialsFromStore(opts, bolt)
 
     if err != nil {
         log.Fatal(err)
@@ -75,9 +81,7 @@ func main() {
     }
 }
 
-func getDbCredentialsFromStore(opts Options) (Options, error) {
-    bolt := jbolt.Open(opts.StoragePath)
-
+func getDbCredentialsFromStore(opts Options, bolt *jbolt.Bolt) (Options, error) {
     keys := [6]string{"DbPort", "DbName", "DbHost", "DbUser", "DbPassword", "DbType"}
     for _, val := range keys {
         err := opts.fillFromStoreByKey(bolt, val)
