@@ -1,6 +1,6 @@
 # Generator PHP Entities
 
-Run Frist time
+Run first time
 `go run backend/app/main.go --table=settings --db_user=user --db_name=dbname --db_password=pass --db_port=3306 --db_host=127.0.0.1`
 
 Run Second
@@ -44,3 +44,20 @@ class UserEntity
     }
 }
 ```
+
+## Description options
+| Options             | Description |
+|---------------------|-------------|
+| -n, --db_name=      |  DB Name |
+| -h, --db_host=      |  DB Host |
+| -p, --db_port=      |  DB Port |
+| -u, --db_user=      |  DB User |
+| --db_password=      | DB Password |
+| --db_type=          | Type of DB |
+| -y, --type=         |  Type of generates files (default: entity) |
+| -t, --table=        |  Table for generate Entity |
+| -o, --output_path=  |  Path where generation file(s) are saved |
+| -s, --storage_path= | Storage Path (default: /var/tmp/jtrw_generator_php_entities.db) |
+| --profile=          | Profile's credentials. Command 'list' for display all profiles |
+
+
