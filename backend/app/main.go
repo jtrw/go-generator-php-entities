@@ -105,7 +105,7 @@ func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
         value := jbolt.Get(bolt.DB, bucket, boltKey)
 
         if len(value) <= 0 {
-            return errors.New("DB "+key+" is required")
+            return errors.New("Key:'"key+"' is required")
         }
 
         reflections.SetField(opts, key, value)
