@@ -72,7 +72,7 @@ func main() {
         log.Fatal(err)
     }
 
-    if opts.Type == TYPE_ENTITY {
+    if isTypeEntity(opts.Type) {
         var entityOptions = entity.EntityOptions {
             Table: opts.Table,
             OutputPath: opts.OutputPath,
@@ -81,6 +81,10 @@ func main() {
     } else {
         log.Fatal("Type of generate files not found")
     }
+}
+
+func isTypeEntity(string t) (bool) {
+    return t == TYPE_ENTITY
 }
 
 func getDbCredentialsFromStore(opts Options, bolt *jbolt.Bolt) (Options, error) {
