@@ -28,6 +28,12 @@ type Options struct {
    Profile string `long:"profile" description:"Profile's credentials. Command 'list' for display all profiles"`
 }
 
+type Profile struct {
+    Id int
+    Name string
+    Type string
+}
+
 const TYPE_ENTITY string = "entity"
 const bucket string = "credentials/db"
 
