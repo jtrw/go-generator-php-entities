@@ -10,7 +10,8 @@ import (
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
-   jbolt "generator-php-entities/v1/backend/app/store/jbolt"
+  // jbolt "generator-php-entities/v1/backend/app/store/jbolt"
+   jstore "generator-php-entities/v1/backend/app/store"
 )
 
 type Options struct {
@@ -46,14 +47,22 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    bolt := jbolt.Open(opts.StoragePath)
+
+    store := jstore.Store {
+        StorePath: opts.StoragePath,
+    }
+
+    store.JBolt = store.NewStore()
+
+
+    //bolt := jbolt.Open(opts.StoragePath)
 
     if len(opts.Profile) > 0 && opts.Profile == "list" {
         log.Println("1 - db_name - mysql, 2 - db_name - pgsql")
         return
     }
 
-    opts, err = getDbCredentialsFromStore(opts, bolt)
+    opts, err = getDbCredentialsFromStore(opts, store)
 
     if err != nil {
         log.Fatal(err)
@@ -78,6 +87,7 @@ func main() {
         log.Fatal(err)
     }
 
+log.Println(opts.Type)
     if isTypeEntity(opts.Type) {
         var entityOptions = entity.EntityOptions {
             Table: opts.Table,
@@ -89,14 +99,14 @@ func main() {
     }
 }
 
-func isTypeEntity(string t) (bool) {
+func isTypeEntity(t string) (bool) {
     return t == TYPE_ENTITY
 }
 
-func getDbCredentialsFromStore(opts Options, bolt *jbolt.Bolt) (Options, error) {
+func getDbCredentialsFromStore(opts Options, store jstore.Store) (Options, error) {
     keys := [6]string{"DbPort", "DbName", "DbHost", "DbUser", "DbPassword", "DbType"}
     for _, val := range keys {
-        err := opts.fillFromStoreByKey(bolt, val)
+        err := opts.fillFromStoreByKey(store, val)
         if err != nil {
             return opts, err
         }
@@ -105,17 +115,28 @@ func getDbCredentialsFromStore(opts Options, bolt *jbolt.Bolt) (Options, error) 
     return opts, nil
 }
 
-func (opts *Options) fillFromStoreByKey(bolt *jbolt.Bolt, key string) (error) {
+func (opts *Options) fillFromStoreByKey(store jstore.Store, key string) (error) {
+
     value := opts.GetField(key)
     boltKey := getBoltKey(key, opts.Profile)
 
     if len(value) > 0 {
-        jbolt.Set(bolt.DB, bucket, boltKey, value)
+         message := jstore.Message {
+            Key: boltKey,
+            Bucket: bucket,
+            Data: value,
+        }
+
+        store.Save(&message)
+        //jbolt.Set(bolt.DB, bucket, boltKey, value)
     } else {
-        value := jbolt.Get(bolt.DB, bucket, boltKey)
+        //value := jbolt.Get(bolt.DB, bucket, boltKey)
+        message, _ := store.Load(bucket, boltKey)
+
+        value := message.Data
 
         if len(value) <= 0 {
-            return errors.New("Key:'"key+"' is required")
+            return errors.New("Key:'"+key+"' is required")
         }
 
         reflections.SetField(opts, key, value)
