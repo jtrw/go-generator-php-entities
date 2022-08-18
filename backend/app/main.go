@@ -10,7 +10,6 @@ import (
    describe "generator-php-entities/v1/backend/app/db/repository"
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
-  // jbolt "generator-php-entities/v1/backend/app/store/jbolt"
    jstore "generator-php-entities/v1/backend/app/store"
 )
 
@@ -53,9 +52,6 @@ func main() {
     }
 
     store.JBolt = store.NewStore()
-
-
-    //bolt := jbolt.Open(opts.StoragePath)
 
     if len(opts.Profile) > 0 && opts.Profile == "list" {
         log.Println("1 - db_name - mysql, 2 - db_name - pgsql")
@@ -128,10 +124,12 @@ func (opts *Options) fillFromStoreByKey(store jstore.Store, key string) (error) 
         }
 
         store.Save(&message)
-        //jbolt.Set(bolt.DB, bucket, boltKey, value)
     } else {
-        //value := jbolt.Get(bolt.DB, bucket, boltKey)
-        message, _ := store.Load(bucket, boltKey)
+        message, err := store.Load(bucket, boltKey)
+
+        if err != nil {
+            return err
+        }
 
         value := message.Data
 
