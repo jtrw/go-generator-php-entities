@@ -108,6 +108,14 @@ func getDbCredentialsFromStore(opts Options, store jstore.Store) (Options, error
         }
     }
 
+    dataJson := &jstore.JSON{}
+
+    message := jstore.Message {
+        Key: "last_db_creds",
+        Bucket: bucket,
+        DataJson: *dataJson
+    }
+
     return opts, nil
 }
 
