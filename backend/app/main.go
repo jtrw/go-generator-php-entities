@@ -11,6 +11,7 @@ import (
    connection "generator-php-entities/v1/backend/app/db"
    entity "generator-php-entities/v1/backend/app/generator"
    jstore "generator-php-entities/v1/backend/app/store"
+   "encoding/json"
 )
 
 type Options struct {
@@ -77,13 +78,25 @@ func main() {
     if (cErr != nil) {
         log.Fatal(cErr)
     }
+    dataSettingsByte, _ := json.Marshal(dbSettings)
+    dataJson := &jstore.JSON{}
+    json.Unmarshal(dataSettingsByte, dataJson)
+
+    message := jstore.Message {
+        Key: "last_db_creds",
+        Bucket: bucket,
+        DataJson: *dataJson,
+    }
+
+    store.Save(&message)
+
     results, err := describe.Get(conn, opts.Table)
 
     if err != nil {
         log.Fatal(err)
     }
 
-log.Println(opts.Type)
+
     if isTypeEntity(opts.Type) {
         var entityOptions = entity.EntityOptions {
             Table: opts.Table,
@@ -106,14 +119,6 @@ func getDbCredentialsFromStore(opts Options, store jstore.Store) (Options, error
         if err != nil {
             return opts, err
         }
-    }
-
-    dataJson := &jstore.JSON{}
-
-    message := jstore.Message {
-        Key: "last_db_creds",
-        Bucket: bucket,
-        DataJson: *dataJson
     }
 
     return opts, nil
