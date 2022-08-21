@@ -20,7 +20,7 @@ type Message struct {
 	Type    string
 	Data    string
 	DataJson JSON
-	//Data    []byte
+	DataBite []byte
 	PinHash string
 	Errors  int
 }
