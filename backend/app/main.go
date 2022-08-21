@@ -54,38 +54,48 @@ func main() {
 
     store.JBolt = store.NewStore()
 
+    //mess, err := store.Load(bucket, "last_db_creds")
+//     if err != nil {
+//         //..No items
+//     }
+
+    //dbSettings := connection.Settings{}
+    //json.Unmarshal(mess.DataBite, &dbSettings)
+
+
     if len(opts.Profile) > 0 && opts.Profile == "list" {
         log.Println("1 - db_name - mysql, 2 - db_name - pgsql")
         return
     }
+    dbSettings := getBdSettings(opts, store)
+    //opts, err = getDbCredentialsFromStore(opts, store)
 
-    opts, err = getDbCredentialsFromStore(opts, store)
+//     if err != nil {
+//         log.Fatal(err)
+//     }
 
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    dbSettings := connection.Settings {
-        Host: opts.DbHost,
-        Port: opts.DbPort,
-        User: opts.DbUser,
-        Pass: opts.DbPassword,
-        DbName: opts.DbName,
-        Type: opts.DbType,
-    }
+//     dbSettings = connection.Settings {
+//         Host: opts.DbHost,
+//         Port: opts.DbPort,
+//         User: opts.DbUser,
+//         Pass: opts.DbPassword,
+//         DbName: opts.DbName,
+//         Type: opts.DbType,
+//     }
 
     conn, cErr := connection.Init(dbSettings)
     if (cErr != nil) {
         log.Fatal(cErr)
     }
     dataSettingsByte, _ := json.Marshal(dbSettings)
-    dataJson := &jstore.JSON{}
-    json.Unmarshal(dataSettingsByte, dataJson)
+    //dataJson := &jstore.JSON{}
+    //json.Unmarshal(dataSettingsByte, dataJson)
 
     message := jstore.Message {
         Key: "last_db_creds",
         Bucket: bucket,
-        DataJson: *dataJson,
+        //DataJson: *dataJson,
+        DataBite: dataSettingsByte,
     }
 
     store.Save(&message)
@@ -106,6 +116,32 @@ func main() {
     } else {
         log.Fatal("Type of generate files not found")
     }
+}
+
+func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {
+    dbSettings := connection.Settings{}
+
+    mess, err := store.Load(bucket, "last_db_creds")
+
+    if err != nil {
+        dbSettings = connection.Settings {
+            Host: opts.DbHost,
+            Port: opts.DbPort,
+            User: opts.DbUser,
+            Pass: opts.DbPassword,
+            DbName: opts.DbName,
+            Type: opts.DbType,
+        }
+
+        return dbSettings
+    }
+
+
+    json.Unmarshal(mess.DataBite, &dbSettings)
+
+    return dbSettings
+
+    //return nil, errors.New("Settings Not Found")
 }
 
 func isTypeEntity(t string) (bool) {
