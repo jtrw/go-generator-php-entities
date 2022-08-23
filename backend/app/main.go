@@ -37,6 +37,7 @@ type Profile struct {
 
 const TYPE_ENTITY string = "entity"
 const bucket string = "credentials/db"
+const KEY_LAST_CREDENTIALS string = "last_db_creds"
 
 func main() {
     var opts Options
@@ -67,7 +68,7 @@ func main() {
     dataSettingsByte, _ := json.Marshal(dbSettings)
 
     message := jstore.Message {
-        Key: "last_db_creds",
+        Key: KEY_LAST_CREDENTIALS,
         Bucket: bucket,
         DataBite: dataSettingsByte,
     }
@@ -79,7 +80,6 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
 
     if isTypeEntity(opts.Type) {
         var entityOptions = entity.EntityOptions {
@@ -95,7 +95,7 @@ func main() {
 func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {
     dbSettings := connection.Settings{}
 
-    mess, err := store.Load(bucket, "last_db_creds")
+    mess, err := store.Load(bucket, KEY_LAST_CREDENTIALS)
 
     if err != nil {
         dbSettings = connection.Settings {
@@ -114,8 +114,6 @@ func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {
     json.Unmarshal(mess.DataBite, &dbSettings)
 
     return dbSettings
-
-    //return nil, errors.New("Settings Not Found")
 }
 
 func isTypeEntity(t string) (bool) {
