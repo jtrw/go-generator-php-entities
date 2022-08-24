@@ -20,7 +20,7 @@ type Options struct {
    DbPort string `short:"p" long:"db_port" default:"" description:"DB Port"`
    DbUser string `short:"u" long:"db_user" default:"" description:"DB User"`
    DbPassword string `long:"db_password" default:"" description:"DB Password"`
-   DbType string `long:"db_type" default:"" description:"Type of DB"`
+   DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
 
    Type string `short:"y" long:"type" default:"entity" description:"Type of generates files"`
    Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
@@ -94,6 +94,20 @@ func main() {
 
 func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {
     dbSettings := connection.Settings{}
+
+    if len(opts.DbHost) > 0 && len(opts.DbPort) > 0 && len(opts.DbUser) > 0 &&
+        len(opts.DbPassword) > 0 && len(opts.DbName) > 0 && len(opts.DbType) > 0 {
+         dbSettings = connection.Settings {
+            Host: opts.DbHost,
+            Port: opts.DbPort,
+            User: opts.DbUser,
+            Pass: opts.DbPassword,
+            DbName: opts.DbName,
+            Type: opts.DbType,
+        }
+
+        return dbSettings
+    }
 
     mess, err := store.Load(bucket, KEY_LAST_CREDENTIALS)
 
