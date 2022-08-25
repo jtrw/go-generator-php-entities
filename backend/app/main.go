@@ -33,11 +33,15 @@ type Profile struct {
     Id int
     Name string
     Type string
+    Settings connection.Settings
 }
 
 const TYPE_ENTITY string = "entity"
 const bucket string = "credentials/db"
+const BUCKET_PROFILES string = "profiles/credentials/db"
+const BUCKET_SYSTEM string = "system"
 const KEY_LAST_CREDENTIALS string = "last_db_creds"
+const KEY_PROFILE string = "profile_"
 
 func main() {
     var opts Options
@@ -74,6 +78,22 @@ func main() {
     }
 
     store.Save(&message)
+
+    profile := Profile{
+        Id: 1,
+        Name: dbSettings.DbName,
+        Type: dbSettings.Type,
+        Settings: dbSettings,
+    }
+    dataProfileByte, _ := json.Marshal(profile)
+    keyProfile := KEY_PROFILE + string(profile.Id)
+    messageProfile := jstore.Message {
+        Key: keyProfile,
+        Bucket: BUCKET_PROFILES,
+        DataBite: dataProfileByte,
+    }
+
+    store.Save(&messageProfile)
 
     results, err := describe.Get(conn, opts.Table)
 
