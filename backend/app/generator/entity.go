@@ -86,21 +86,41 @@ func Generate(opts EntityOptions, rows []Info) {
 }
 
 func getPreparedType(t string) (string) {
-    if strings.Contains(t, "int") {
+    if isInt(t) {
         return "int"
     }
 
-    if strings.Contains(t, "decimal") || strings.Contains(t, "float") {
+    if isFloat(t) {
         return "float"
     }
 
-    if strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
-     strings.Contains(t, "time") || strings.Contains(t, "char") ||
-     strings.Contains(t, "date") || strings.Contains(t, "text") {
+    if isString(t) {
         return "string"
     }
+
+    if isTime(t) {
+        return "DateTime"
+    }
+
     log.Println("Undefined Type: "+t);
     return t
+}
+
+func isInt(t string) (bool) {
+    return strings.Contains(t, "int")
+}
+
+func isFloat(t string) (bool) {
+    return strings.Contains(t, "decimal") || strings.Contains(t, "float")
+}
+
+func isString(t string) (bool) {
+    return strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
+        strings.Contains(t, "char") ||strings.Contains(t, "text")
+}
+
+func isTime(t string) (bool) {
+    return strings.Contains(t, "time") || strings.Contains(t, "date")
 }
 
 func getPreparedName(name string) (string) {
