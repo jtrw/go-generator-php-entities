@@ -39,6 +39,7 @@ func Generate(opts EntityOptions, rows []Info) {
 
     var PropertiesData = []Property{}
     var MethodsData = []Method{}
+    var uses = []Use{}
 
      for _, row := range rows {
          var rowData Property
@@ -52,7 +53,6 @@ func Generate(opts EntityOptions, rows []Info) {
         rowMethod.MethodName = "get"+strings.Title(propertyName)
         rowMethod.TypeMethod = propertyType
         rowMethod.Return = propertyName;
-
         MethodsData = append(MethodsData, rowMethod)
     }
 
