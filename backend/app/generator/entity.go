@@ -16,7 +16,12 @@ type Method struct {
     MethodName, TypeMethod, Return string
 }
 
+type Use struct {
+    Name string
+}
+
 type TemplateEntity struct {
+    Uses []Use
     Properties []Property
     Methods []Method
     EntityName string
@@ -49,10 +54,10 @@ func Generate(opts EntityOptions, rows []Info) {
         rowMethod.Return = propertyName;
 
         MethodsData = append(MethodsData, rowMethod)
-
     }
 
     var templateData = TemplateEntity{
+        Uses: uses,
         EntityName: entityName,
         Properties: PropertiesData,
         Methods: MethodsData,
