@@ -39,11 +39,15 @@ func Generate(opts EntityOptions, rows []Info) {
 
     var PropertiesData = []Property{}
     var MethodsData = []Method{}
-    var uses = []Use{}
+    var usesData = []Use{}
+
+    isUseDatetime := false
 
      for _, row := range rows {
          var rowData Property
          var rowMethod Method
+
+
         propertyName := getPreparedName(row.Field)
         propertyType := getPreparedType(row.Type)
         rowData.Type = propertyType
@@ -54,10 +58,19 @@ func Generate(opts EntityOptions, rows []Info) {
         rowMethod.TypeMethod = propertyType
         rowMethod.Return = propertyName;
         MethodsData = append(MethodsData, rowMethod)
+
+        if isTime(row.Type) {
+            isUseDatetime = true
+        }
+    }
+    if isUseDatetime {
+        var useData Use
+        useData.Name = "DateTime"
+        usesData = append(usesData, useData)
     }
 
     var templateData = TemplateEntity{
-        Uses: uses,
+        Uses: usesData,
         EntityName: entityName,
         Properties: PropertiesData,
         Methods: MethodsData,
