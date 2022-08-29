@@ -1,6 +1,8 @@
 <?php
 namespace App\Entity;
 
+{{range .Uses}}use {{.Name}};
+{{end}}
 class {{.EntityName}}
 {
 {{range .Properties}}
