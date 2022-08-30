@@ -27,7 +27,7 @@ class {{.EntityName}}
     public function toArray(): array
     {
         return [{{range .Methods}}
-            '{{.Return}}' => $this->{{.Return}},{{end}}
+            '{{.OriginName}}' => $this->{{.Return}},{{end}}
         ];
     }
 
@@ -40,7 +40,7 @@ class {{.EntityName}}
     {
         $entity = new self();
 {{range .Methods}}
-        $entity->{{.Return}} = $fields['{{.Return}}'];{{end}}
+        $entity->{{.Return}} = $fields['{{.OriginName}}'];{{end}}
 
         return $entity;
     }
