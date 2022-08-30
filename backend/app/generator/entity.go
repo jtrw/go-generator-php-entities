@@ -13,7 +13,7 @@ type Property struct {
 }
 
 type Method struct {
-    MethodName, TypeMethod, Return string
+    MethodName, TypeMethod, Return, OriginName string
 }
 
 type Use struct {
@@ -56,7 +56,8 @@ func Generate(opts EntityOptions, rows []Info) {
 
         rowMethod.MethodName = "get"+strings.Title(propertyName)
         rowMethod.TypeMethod = propertyType
-        rowMethod.Return = propertyName;
+        rowMethod.Return = propertyName
+        rowMethod.OriginName = row.Field
         MethodsData = append(MethodsData, rowMethod)
 
         if isTime(row.Type) {
