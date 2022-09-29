@@ -45,6 +45,60 @@ class UserEntity
 }
 ```
 
+## Generate DTO
+Sometimes we need create DTO struct form array
+
+```php
+class UserDto
+{
+    private int $id;
+
+    /**
+    * @return int
+    */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+    * @param array $fields
+    * @return static
+    */
+    public static function fromArray(array $fields): self
+    {
+        $entity = new self();
+        $entity->id = $fields['id'];
+
+        return $entity;
+    }
+}
+```
+How convenient is it to add parameters in go for parse?
+yaml?
+```yaml
+entity:
+    name: UserEntity
+    from: database
+    database:
+        alias: testbd
+        name: db_name
+        port: db_port
+        user: db_user
+        pass: db_password
+dto:
+    name: UserDto
+    from: array
+    params:
+        id: int,
+        name: string
+```
+
+
+## Generate ValuesObject
+
+
+
 ## Description options
 | Options             | Description |
 |---------------------|-------------|
