@@ -1,5 +1,11 @@
-dto:
-  name: UserDto
-  params:
-    id: int,
-    name: string
+DTOs:
+  UserDto:
+    params:
+      id: int,
+      name: string
+  SettingDto:
+    params:
+      id: int
+      name: string
+      value: string
+      is_active: bool
