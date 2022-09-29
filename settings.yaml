@@ -1,0 +1,5 @@
+dto:
+  name: UserDto
+  params:
+    id: int,
+    name: string
