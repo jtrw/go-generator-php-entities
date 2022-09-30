@@ -7,6 +7,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/nilBora/bolt v1.3.1
 	github.com/oleiade/reflections v1.0.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (
