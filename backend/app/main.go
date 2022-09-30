@@ -2,6 +2,8 @@ package main
 
 import (
   "fmt"
+  //"io/ioutil"
+  "os"
   "log"
   "errors"
   "reflect"
@@ -12,6 +14,7 @@ import (
    entity "generator-php-entities/v1/backend/app/generator"
    jstore "generator-php-entities/v1/backend/app/store"
    "encoding/json"
+   "gopkg.in/yaml.v3"
 )
 
 type Options struct {
@@ -23,10 +26,11 @@ type Options struct {
    DbType string `long:"db_type" default:"mysql" description:"Type of DB"`
 
    Type string `short:"y" long:"type" default:"entity" description:"Type of generates files"`
-   Table string `short:"t" long:"table" required:"true" description:"Table for generate Entity"`
+   Table string `short:"t" long:"table" required:"false" description:"Table for generate Entity"`
    OutputPath  string `short:"o" long:"output_path" default:"" description:"Path where generation file(s) are saved"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
    Profile string `long:"profile" description:"Profile's credentials. Command 'list' for display all profiles"`
+   Config string `short:"f" long:"file" env:"CONF" default:"configs.yaml" description:"config file"`
 }
 
 type Profile struct {
@@ -34,6 +38,26 @@ type Profile struct {
     Name string
     Type string
     Settings connection.Settings
+}
+
+// type Config struct {
+//     Dtos []struct {
+//         Name string   `yaml:"name"`
+//         Params string {
+//             Id string `yaml:"id"`
+//             Name string `yaml:"name"`
+//             Value string `yaml:"value"`
+//             IsActive string `yaml:"is_active"`
+//         } `yaml:"params"`
+//     } `yaml:"DTOs"`
+// }
+
+type Config struct {
+    Dtos []struct {
+        Name string `yaml:"name"`
+       // Params []string `yaml:"params"`
+        Params interface{}
+    } `yaml:"DTOs"`
 }
 
 const TYPE_ENTITY string = "entity"
@@ -51,6 +75,33 @@ func main() {
 
     if err != nil {
         log.Fatal(err)
+    }
+
+   // parsedData := make(map[interface{}]interface{})
+
+//     file, err := ioutil.ReadFile(opts.Config)
+//     if err != nil {
+//         log.Fatal(err)
+//     }
+//
+//     err2 := yaml.Unmarshal(file, &parsedData)
+//     if err2 != nil {
+//         log.Fatal(err2)
+//     }
+//     log.Println(parsedData)
+
+    config, errYaml := LoadConfig(opts.Config)
+    if errYaml != nil {
+        log.Println(errYaml)
+    }
+
+    dtos := config.Dtos
+    for _, value := range dtos {
+        fmt.Println(value.Name)
+        fmt.Println(value.Params)
+//         for _, v := range value.Params {
+//             fmt.Println(v)
+//        }
     }
 
     store := jstore.Store {
@@ -110,6 +161,20 @@ func main() {
     } else {
         log.Fatal("Type of generate files not found")
     }
+}
+
+func LoadConfig(file string) (*Config, error) {
+	fh, err := os.Open(file) //nolint
+	if err != nil {
+		return nil, fmt.Errorf("can't load config file %s: %w", file, err)
+	}
+	defer fh.Close() //nolint
+
+	res := Config{}
+	if err := yaml.NewDecoder(fh).Decode(&res); err != nil {
+		return nil, fmt.Errorf("can't parse config: %w", err)
+	}
+	return &res, nil
 }
 
 func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {

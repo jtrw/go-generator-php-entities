@@ -1,0 +1,11 @@
+DTOs:
+  - name: "UserDto"
+    params:
+      id: "int"
+      name: "string"
+  - name: "SettingDto"
+    params:
+      id: "int"
+      name: "string"
+      value: "string"
+      is_active: "bool"
