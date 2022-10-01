@@ -28,12 +28,11 @@ type TemplateEntity struct {
 }
 
 type EntityOptions struct {
-    Table, OutputPath string
+    Name, OutputPath string
 }
 
 func Generate(opts EntityOptions, rows []Info) {
-    tableName := opts.Table
-    entityName := getEntityNameFromTableName(tableName)
+    entityName := opts.Name
     fmt.Printf("Enter Entity name default '%s': ", entityName)
     fmt.Scanln(&entityName)
 
@@ -153,35 +152,4 @@ func getPreparedName(name string) (string) {
 
 func getPreparedEntityName(name string) (string) {
     return strings.Title(name)+"Entity"
-}
-
-func getEntityNameFromTableName(name string) (string) {
-    nameLen := len(name)
-    lastSymbol := string(name[nameLen-1])
-    if lastSymbol == "s" {
-        name = strings.TrimSuffix(name, "s")
-    }
-
-    return snakeCaseToCamelCase(name)+"Entity"
-}
-
-func snakeCaseToCamelCase(inputUnderScoreStr string) (camelCase string) {
-    isToUpper := false
-    for k, v := range inputUnderScoreStr {
-        if k == 0 {
-            camelCase = strings.ToUpper(string(inputUnderScoreStr[0]))
-        } else {
-            if isToUpper {
-                camelCase += strings.ToUpper(string(v))
-                isToUpper = false
-            } else {
-                 if v == '_' {
-                    isToUpper = true
-                 } else {
-                    camelCase += string(v)
-                 }
-            }
-        }
-    }
-    return
 }

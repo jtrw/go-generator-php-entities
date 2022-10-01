@@ -1,0 +1,47 @@
+<?php
+namespace App\Entity;
+
+{{range .Uses}}use {{.Name}};
+{{end}}
+class {{.EntityName}}
+{
+{{range .Properties}}
+    /**
+     * @var {{.Type}}
+     */
+    private {{.Type}} {{.Name}};
+{{end}}
+{{range .Methods}}
+    /**
+     * @return {{.TypeMethod}}
+     */
+    public function {{.MethodName}}(): {{.TypeMethod}}
+    {
+        return $this->{{.Return}};
+}
+{{end}}
+
+/**
+* @return array
+*/
+public function toArray(): array
+{
+return [{{range .Methods}}
+'{{.OriginName}}' => $this->{{.Return}},{{end}}
+];
+}
+
+
+/**
+* @param array $fields
+* @return static
+*/
+public static function fromArray(array $fields): self
+{
+$entity = new self();
+{{range .Methods}}
+    $entity->{{.Return}} = $fields['{{.OriginName}}'];{{end}}
+
+return $entity;
+}
+}

@@ -15,6 +15,8 @@ import (
    jstore "generator-php-entities/v1/backend/app/store"
    "encoding/json"
    "gopkg.in/yaml.v3"
+   str "generator-php-entities/v1/backend/app/utils"
+   field "generator-php-entities/v1/backend/app/generator"
 )
 
 type Options struct {
@@ -30,7 +32,7 @@ type Options struct {
    OutputPath  string `short:"o" long:"output_path" default:"" description:"Path where generation file(s) are saved"`
    StoragePath string `short:"s" long:"storage_path" default:"/var/tmp/jtrw_generator_php_entities.db" description:"Storage Path"`
    Profile string `long:"profile" description:"Profile's credentials. Command 'list' for display all profiles"`
-   Config string `short:"f" long:"file" env:"CONF" default:"configs.yaml" description:"config file"`
+   Config string `short:"f" long:"file" env:"CONF" description:"config file"`
 }
 
 type Profile struct {
@@ -40,23 +42,10 @@ type Profile struct {
     Settings connection.Settings
 }
 
-// type Config struct {
-//     Dtos []struct {
-//         Name string   `yaml:"name"`
-//         Params string {
-//             Id string `yaml:"id"`
-//             Name string `yaml:"name"`
-//             Value string `yaml:"value"`
-//             IsActive string `yaml:"is_active"`
-//         } `yaml:"params"`
-//     } `yaml:"DTOs"`
-// }
-
 type Config struct {
     Dtos []struct {
         Name string `yaml:"name"`
-       // Params []string `yaml:"params"`
-        Params interface{}
+        Params  map[string]interface{}
     } `yaml:"DTOs"`
 }
 
@@ -77,31 +66,32 @@ func main() {
         log.Fatal(err)
     }
 
-   // parsedData := make(map[interface{}]interface{})
+    if len(opts.Config) > 0 {
+        config, errYaml := LoadConfig(opts.Config)
+        if errYaml != nil {
+            log.Println(errYaml)
+        }
 
-//     file, err := ioutil.ReadFile(opts.Config)
-//     if err != nil {
-//         log.Fatal(err)
-//     }
-//
-//     err2 := yaml.Unmarshal(file, &parsedData)
-//     if err2 != nil {
-//         log.Fatal(err2)
-//     }
-//     log.Println(parsedData)
+        dtos := config.Dtos
+        var infoDtoFields []field.Info
+        for _, value := range dtos {
+            for k, v := range value.Params {
+                 fmt.Printf("%s : %s\n",k, v)
+                 filedInfo := field.Info {
+                    Field: k,
+                    Type: fmt.Sprint(v),
+                }
+                infoDtoFields = append(infoDtoFields, filedInfo)
+            }
 
-    config, errYaml := LoadConfig(opts.Config)
-    if errYaml != nil {
-        log.Println(errYaml)
-    }
+            var dtoOptions = entity.EntityOptions {
+                Name: value.Name,
+                OutputPath: opts.OutputPath,
+            }
+            entity.Generate(dtoOptions, infoDtoFields)
 
-    dtos := config.Dtos
-    for _, value := range dtos {
-        fmt.Println(value.Name)
-        fmt.Println(value.Params)
-//         for _, v := range value.Params {
-//             fmt.Println(v)
-//        }
+        }
+        return
     }
 
     store := jstore.Store {
@@ -153,8 +143,9 @@ func main() {
     }
 
     if isTypeEntity(opts.Type) {
+        name := str.GetEntityNameFromTableName(opts.Table)
         var entityOptions = entity.EntityOptions {
-            Table: opts.Table,
+            Name: name,
             OutputPath: opts.OutputPath,
         }
         entity.Generate(entityOptions, results)
