@@ -67,30 +67,7 @@ func main() {
     }
 
     if len(opts.Config) > 0 {
-        config, errYaml := LoadConfig(opts.Config)
-        if errYaml != nil {
-            log.Println(errYaml)
-        }
-
-        dtos := config.Dtos
-        var infoDtoFields []field.Info
-        for _, value := range dtos {
-            for k, v := range value.Params {
-                 fmt.Printf("%s : %s\n",k, v)
-                 filedInfo := field.Info {
-                    Field: k,
-                    Type: fmt.Sprint(v),
-                }
-                infoDtoFields = append(infoDtoFields, filedInfo)
-            }
-
-            var dtoOptions = entity.EntityOptions {
-                Name: value.Name,
-                OutputPath: opts.OutputPath,
-            }
-            entity.Generate(dtoOptions, infoDtoFields)
-
-        }
+        makeFromConfigFile(opts)
         return
     }
 
@@ -151,6 +128,32 @@ func main() {
         entity.Generate(entityOptions, results)
     } else {
         log.Fatal("Type of generate files not found")
+    }
+}
+
+func makeFromConfigFile(opts Options) {
+    config, errYaml := LoadConfig(opts.Config)
+    if errYaml != nil {
+        log.Println(errYaml)
+    }
+
+    dtos := config.Dtos
+    var infoDtoFields []field.Info
+    for _, value := range dtos {
+        for k, v := range value.Params {
+             fmt.Printf("%s : %s\n",k, v)
+             filedInfo := field.Info {
+                Field: k,
+                Type: fmt.Sprint(v),
+            }
+            infoDtoFields = append(infoDtoFields, filedInfo)
+        }
+
+        var dtoOptions = entity.EntityOptions {
+            Name: value.Name,
+            OutputPath: opts.OutputPath,
+        }
+        entity.Generate(dtoOptions, infoDtoFields)
     }
 }
 
