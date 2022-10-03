@@ -137,11 +137,14 @@ func makeFromConfigFile(opts Options) {
         log.Println(errYaml)
     }
 
+    makeDtos(config, opts.OutputPath)
+}
+
+func makeDtos(config *Config, outputPath string) {
     dtos := config.Dtos
     var infoDtoFields []field.Info
     for _, value := range dtos {
         for k, v := range value.Params {
-             fmt.Printf("%s : %s\n",k, v)
              filedInfo := field.Info {
                 Field: k,
                 Type: fmt.Sprint(v),
@@ -151,7 +154,7 @@ func makeFromConfigFile(opts Options) {
 
         var dtoOptions = entity.EntityOptions {
             Name: value.Name,
-            OutputPath: opts.OutputPath,
+            OutputPath: outputPath,
         }
         entity.Generate(dtoOptions, infoDtoFields)
     }
