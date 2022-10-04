@@ -124,6 +124,7 @@ func main() {
         var entityOptions = entity.EntityOptions {
             Name: name,
             OutputPath: opts.OutputPath,
+            Template: "backend/app/template/entity.gohtml",
         }
         entity.Generate(entityOptions, results)
     } else {
@@ -155,6 +156,7 @@ func makeDtos(config *Config, outputPath string) {
         var dtoOptions = entity.EntityOptions {
             Name: value.Name,
             OutputPath: outputPath,
+            Template: "backend/app/template/entity.gohtml",
         }
         entity.Generate(dtoOptions, infoDtoFields)
     }
