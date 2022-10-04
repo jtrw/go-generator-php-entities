@@ -28,7 +28,7 @@ type TemplateEntity struct {
 }
 
 type EntityOptions struct {
-    Name, OutputPath string
+    Name, OutputPath, Template string
 }
 
 func Generate(opts EntityOptions, rows []Info) {
@@ -76,7 +76,7 @@ func Generate(opts EntityOptions, rows []Info) {
         Methods: MethodsData,
     }
 
-    t, err := template.ParseFiles("backend/app/template/entity.gohtml")
+    t, err := template.ParseFiles(opts.Template)
     if err != nil {
        panic(err)
     }
