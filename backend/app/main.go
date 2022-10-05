@@ -143,8 +143,9 @@ func makeFromConfigFile(opts Options) {
 
 func makeDtos(config *Config, outputPath string) {
     dtos := config.Dtos
-    var infoDtoFields []field.Info
+
     for _, value := range dtos {
+        var infoDtoFields []field.Info
         for k, v := range value.Params {
              filedInfo := field.Info {
                 Field: k,

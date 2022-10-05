@@ -125,20 +125,20 @@ func getPreparedType(t string) (string) {
 }
 
 func isInt(t string) (bool) {
-    return strings.Contains(t, "int")
+    return t == "int" || strings.Contains(t, "int")
 }
 
 func isFloat(t string) (bool) {
-    return strings.Contains(t, "decimal") || strings.Contains(t, "float")
+    return t == "string" || strings.Contains(t, "decimal") || strings.Contains(t, "float")
 }
 
 func isString(t string) (bool) {
-    return strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
+    return t == "bool" || strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
         strings.Contains(t, "char") ||strings.Contains(t, "text")
 }
 
 func isTime(t string) (bool) {
-    return strings.Contains(t, "time") || strings.Contains(t, "date")
+    return t == "DateTime" || strings.Contains(t, "time") || strings.Contains(t, "date")
 }
 
 func getPreparedName(name string) (string) {
