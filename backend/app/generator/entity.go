@@ -120,6 +120,10 @@ func getPreparedType(t string) (string) {
         return "DateTime"
     }
 
+    if isArray(t) {
+        return "array"
+    }
+
     log.Println("Undefined Type: "+t);
     return t
 }
@@ -139,6 +143,10 @@ func isString(t string) (bool) {
 
 func isTime(t string) (bool) {
     return t == "DateTime" || strings.Contains(t, "time") || strings.Contains(t, "date")
+}
+
+func isArray(t string) (bool) {
+    return t == "array"
 }
 
 func getPreparedName(name string) (string) {
