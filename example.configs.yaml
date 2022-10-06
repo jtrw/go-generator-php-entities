@@ -9,10 +9,3 @@ DTOs:
       name: "string"
       value: "string"
       is_active: "bool"
-  - name: "SendDepositAcceptedEmailCommand"
-    params:
-      user: "array"
-      domain: "string"
-      amount: "float"
-      bank_statement: "string"
-      free_text: "string"
