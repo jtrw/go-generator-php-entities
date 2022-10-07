@@ -55,6 +55,7 @@ const BUCKET_PROFILES string = "profiles/credentials/db"
 const BUCKET_SYSTEM string = "system"
 const KEY_LAST_CREDENTIALS string = "last_db_creds"
 const KEY_PROFILE string = "profile_"
+const TEMPLATE_PATH = "backend/app/template/"
 
 func main() {
     var opts Options
@@ -124,7 +125,7 @@ func main() {
         var entityOptions = entity.EntityOptions {
             Name: name,
             OutputPath: opts.OutputPath,
-            Template: "backend/app/template/entity.gohtml",
+            Template: getTemplatePath("entity.gohtml"),
         }
         entity.Generate(entityOptions, results)
     } else {
@@ -157,7 +158,7 @@ func makeDtos(config *Config, outputPath string) {
         var dtoOptions = entity.EntityOptions {
             Name: value.Name,
             OutputPath: outputPath,
-            Template: "backend/app/template/entity.gohtml",
+            Template: getTemplatePath("dto.gohtml"),
         }
         entity.Generate(dtoOptions, infoDtoFields)
     }
@@ -278,4 +279,8 @@ func (opts Options) GetField(field string) string {
     r := reflect.ValueOf(opts)
     f := reflect.Indirect(r).FieldByName(field)
     return string(f.String())
+}
+
+func getTemplatePath(template string) string {
+    return TEMPLATE_PATH+template
 }
