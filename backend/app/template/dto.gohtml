@@ -18,30 +18,30 @@ class {{.EntityName}}
     public function {{.MethodName}}(): {{.TypeMethod}}
     {
         return $this->{{.Return}};
-}
+    }
 {{end}}
 
-/**
-* @return array
-*/
-public function toArray(): array
-{
-return [{{range .Methods}}
-'{{.OriginName}}' => $this->{{.Return}},{{end}}
-];
-}
+    /**
+    * @return array
+    */
+    public function toArray(): array
+    {
+        return [{{range .Methods}}
+            '{{.OriginName}}' => $this->{{.Return}},{{end}}
+        ];
+    }
 
 
-/**
-* @param array $fields
-* @return static
-*/
-public static function fromArray(array $fields): self
-{
-$entity = new self();
+    /**
+    * @param array $fields
+    * @return static
+    */
+    public static function fromArray(array $fields): self
+    {
+        $entity = new self();
 {{range .Methods}}
-    $entity->{{.Return}} = $fields['{{.OriginName}}'];{{end}}
+        $entity->{{.Return}} = $fields['{{.OriginName}}'];{{end}}
 
-return $entity;
-}
+        return $entity;
+    }
 }
