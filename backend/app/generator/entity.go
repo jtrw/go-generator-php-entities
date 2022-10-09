@@ -46,7 +46,6 @@ func Generate(opts EntityOptions, rows []Info) {
          var rowData Property
          var rowMethod Method
 
-
         propertyName := getPreparedName(row.Field)
         propertyType := getPreparedType(row.Type)
         rowData.Type = propertyType

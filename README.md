@@ -113,5 +113,6 @@ dto:
 | -o, --output_path=  |  Path where generation file(s) are saved |
 | -s, --storage_path= | Storage Path (default: /var/tmp/jtrw_generator_php_entities.db) |
 | --profile=          | Profile's credentials. Command 'list' for display all profiles |
+| -f --file=          | Yaml config file for generate dtos or entities |
 
 
