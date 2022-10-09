@@ -210,7 +210,6 @@ func getBdSettings(opts Options, store jstore.Store) (connection.Settings) {
         return dbSettings
     }
 
-
     json.Unmarshal(mess.DataBite, &dbSettings)
 
     return dbSettings
@@ -233,7 +232,6 @@ func getDbCredentialsFromStore(opts Options, store jstore.Store) (Options, error
 }
 
 func (opts *Options) fillFromStoreByKey(store jstore.Store, key string) (error) {
-
     value := opts.GetField(key)
     boltKey := getBoltKey(key, opts.Profile)
 
