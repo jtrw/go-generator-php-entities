@@ -86,12 +86,17 @@ entity:
         port: db_port
         user: db_user
         pass: db_password
-dto:
-    name: UserDto
-    from: array
+DTOs:
+  - name: "UserDto"
     params:
-        id: int,
-        name: string
+      id: "int"
+      name: "string"
+  - name: "SettingDto"
+    params:
+      id: "int"
+      name: "string"
+      value: "string"
+      is_active: "bool"
 ```
 
 
@@ -113,6 +118,6 @@ dto:
 | -o, --output_path=  |  Path where generation file(s) are saved |
 | -s, --storage_path= | Storage Path (default: /var/tmp/jtrw_generator_php_entities.db) |
 | --profile=          | Profile's credentials. Command 'list' for display all profiles |
-| -f --file=          | Yaml config file for generate dtos or entities |
+| -f, --file=         | Yaml config file for generate dtos or entities |
 
 
