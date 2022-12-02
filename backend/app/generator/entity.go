@@ -123,6 +123,10 @@ func getPreparedType(t string) (string) {
         return "array"
     }
 
+    if (isBool(t)) {
+        return "bool"
+    }
+
     log.Println("Undefined Type: "+t);
     return t
 }
@@ -132,12 +136,16 @@ func isInt(t string) (bool) {
 }
 
 func isFloat(t string) (bool) {
-    return t == "string" || strings.Contains(t, "decimal") || strings.Contains(t, "float")
+    return strings.Contains(t, "decimal") || strings.Contains(t, "float")
 }
 
 func isString(t string) (bool) {
-    return t == "bool" || strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
+    return t == "string" || strings.Contains(t, "varchar") || strings.Contains(t, "enum") ||
         strings.Contains(t, "char") ||strings.Contains(t, "text")
+}
+
+func isBool(t string) (bool) {
+    return t == "bool"
 }
 
 func isTime(t string) (bool) {
