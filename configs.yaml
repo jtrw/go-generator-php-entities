@@ -1,18 +1,10 @@
 DTOs:
-  - name: "UserDto"
+  - name: "SellerEntity"
     params:
       id: "int"
+      company_id: "int"
       name: "string"
-  - name: "SettingDto"
-    params:
-      id: "int"
-      name: "string"
-      value: "string"
-      is_active: "bool"
-  - name: "SendDepositAcceptedEmailCommand"
-    params:
-      user: "array"
-      domain: "string"
-      amount: "float"
-      bank_statement: "string"
-      free_text: "string"
+      description: "string"
+      enabled: "bool"
+      created_at: "DateTime"
+      updated_at: "DateTime"
