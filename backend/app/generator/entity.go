@@ -145,7 +145,7 @@ func isString(t string) (bool) {
 }
 
 func isBool(t string) (bool) {
-    return t == "bool"
+    return t == "bool" || t == "tinyint(1)"
 }
 
 func isTime(t string) (bool) {
